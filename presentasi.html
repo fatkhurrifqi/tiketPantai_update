@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Presentasi — TiketPantai (E-Ticketing Wisata Pantai)</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reset.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/theme/white.css" id="theme">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --tp-teal:#14b8a6; --tp-teal-deep:#0d9488; --tp-cyan:#06b6d4; --tp-ink:#0f172a; --tp-soft:#f0fdfa;
+    }
+    .reveal, .reveal h1, .reveal h2, .reveal h3, .reveal h4{
+      font-family:'Plus Jakarta Sans','Inter',sans-serif;
+    }
+    .reveal{ color:#1f2937; }
+    .reveal .slides{ text-align:left; }
+    .reveal section{ border-radius:18px; }
+    .reveal h1,.reveal h2,.reveal h3{ color:var(--tp-teal-deep); text-transform:none; letter-spacing:normal; }
+    .reveal h2{ font-size:1.5em; margin-bottom:.4em; }
+    .reveal h3{ font-size:1.05em; }
+    .reveal p,.reveal li,.reveal td,.reveal th{ font-family:'Inter',sans-serif; font-size:.62em; line-height:1.55; }
+    .reveal ul,.reveal ol{ margin-left:.2em; }
+    .reveal code{ font-family:ui-monospace,Menlo,Consolas,monospace; background:#f1f5f9; padding:1px 6px; border-radius:6px; color:#0e7490; font-size:.9em; }
+    .reveal pre{ font-size:.5em; line-height:1.4; border-radius:12px; box-shadow:none; }
+    .reveal pre code{ background:transparent; padding:0; color:#e2e8f0; }
+    .reveal blockquote{ width:100%; background:var(--tp-soft); border-left:5px solid var(--tp-teal); color:#0f766e; border-radius:10px; margin:0; padding:.6em 1em; font-style:normal; }
+    .reveal a{ color:var(--tp-teal-deep); }
+    .reveal .progress{ color:var(--tp-teal); }
+    .reveal .controls{ color:var(--tp-teal); }
+
+    /* slide pembuka */
+    .cover{
+      background:linear-gradient(135deg,#0f766e 0%,#14b8a6 45%,#06b6d4 100%);
+      color:#fff !important; text-align:center;
+    }
+    .cover h1{ color:#fff !important; font-size:2.1em; text-shadow:0 4px 20px rgba(0,0,0,.25); }
+    .cover p{ color:rgba(255,255,255,.92); font-size:.7em; }
+    .cover .logo{
+      width:78px;height:78px;border-radius:20px;background:rgba(255,255,255,.18);
+      display:inline-flex;align-items:center;justify-content:center;font-size:1.7em;margin-bottom:.4em;
+      border:1px solid rgba(255,255,255,.3);
+    }
+    .cover .badge{ display:inline-block; background:rgba(255,255,255,.16); padding:.35em 1.1em; border-radius:999px; font-size:.5em; margin-top:.6em; backdrop-filter:blur(6px); border:1px solid rgba(255,255,255,.25);}
+
+    .kicker{ color:var(--tp-teal); font-weight:700; font-size:.5em; letter-spacing:.18em; text-transform:uppercase; }
+    .chip{ display:inline-block; background:var(--tp-soft); color:#0f766e; border:1px solid #99f6e4; padding:3px 10px; border-radius:999px; font-size:.46em; font-weight:600; margin:2px 4px 2px 0; }
+    .cardgrid{ display:grid; grid-template-columns:1fr 1fr; gap:.6em; }
+    .card{ background:#fff; border:1px solid #e2e8f0; border-radius:14px; padding:.7em .9em; box-shadow:0 6px 18px -12px rgba(15,23,42,.18); }
+    .card h4{ color:var(--tp-teal-deep); margin:0 0 .25em; font-size:.7em; }
+    .card p{ margin:0; color:#475569; font-size:.55em; }
+    .ic{ color:var(--tp-teal); }
+    table{ width:100%; border-collapse:collapse; margin-top:.3em; }
+    th,td{ border:1px solid #e2e8f0; padding:5px 8px; text-align:left; }
+    th{ background:var(--tp-soft); color:#0f766e; font-weight:700; }
+    tr:nth-child(even) td{ background:#f8fafc; }
+    .flow{ font-family:'Inter'; font-size:.55em; background:#0f172a; color:#e2e8f0; border-radius:14px; padding:1em 1.1em; line-height:1.9; white-space:pre; }
+    .flow b{ color:#5eead4; }
+    .stat{ display:inline-block; text-align:center; padding:.5em 1em; }
+    .stat .n{ display:block; font-size:1.6em; font-weight:800; color:var(--tp-teal-deep); }
+    .stat .l{ font-size:.5em; color:#64748b; }
+    .small{ font-size:.5em; color:#64748b; }
+    .reveal section img{ border-radius:12px; box-shadow:0 10px 30px -12px rgba(15,23,42,.25); }
+    .twocol{ display:grid; grid-template-columns:1fr 1fr; gap:.8em; }
+  </style>
+</head>
+<body>
+<div class="reveal"><div class="slides">
+
+  <!-- 1. COVER -->
+  <section class="cover" data-background-gradient="linear-gradient(135deg,#0f766e,#06b6d4)">
+    <div class="logo">🏝️</div>
+    <h1>TiketPantai</h1>
+    <p>Sistem E-Ticketing Pemesanan Tiket & Fasilitas Wisata Pantai</p>
+    <p class="small" style="color:rgba(255,255,255,.85)">Paranggupito, Kabupaten Wonogiri — PHP + MySQL</p>
+    <span class="badge">Presentasi Project</span>
+  </section>
+
+  <!-- 2. AGENDA -->
+  <section>
+    <p class="kicker">Agenda</p>
+    <h2>Daftar Isi</h2>
+    <div class="twocol">
+      <ol>
+        <li>Tentang Proyek</li>
+        <li>Teknologi & Stack</li>
+        <li>Struktur Folder</li>
+        <li>Arsitektur & Alur</li>
+        <li>Database & ERD</li>
+        <li>Konfigurasi & DB</li>
+      </ol>
+      <ol start="7">
+        <li>Halaman Publik</li>
+        <li>Pemesanan & Pembayaran</li>
+        <li>Autentikasi</li>
+        <li>Modul Admin</li>
+        <li>API & Keamanan</li>
+        <li>Demo & Penutup</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 3. TENTANG PROYEK -->
+  <section>
+    <p class="kicker">Tentang</p>
+    <h2>Apa itu TiketPantai?</h2>
+    <p>Platform <b>pemesanan tiket masuk & sewa fasilitas</b> pantai secara online — pesan dari rumah, nikmati pantainya tanpa antrian.</p>
+    <div class="cardgrid" style="margin-top:.6em">
+      <div class="card"><h4>🎯 Tujuan</h4><p>Digitalisasi penjualan tiket wisata Kecamatan Paranggupito agar lebih cepat & transparan.</p></div>
+      <div class="card"><h4>👥 Pengguna</h4><p>Wisatawan (beli tiket) & Admin (kelola destinasi, tiket, pesanan, status).</p></div>
+      <div class="card"><h4>🏖️ Destinasi</h4><p>Pantai Klothok, Pantai Sembukan, Karang Payung (+ dapat ditambah admin).</p></div>
+      <div class="card"><h4>💳 Pembayaran</h4><p>Transfer Bank, E-Wallet, QRIS, atau Bayar di Lokasi.</p></div>
+    </div>
+  </section>
+
+  <!-- 4. TEKNOLOGI -->
+  <section>
+    <p class="kicker">Teknologi</p>
+    <h2>Stack & Tools</h2>
+    <p>
+      <span class="chip">PHP 7.4+ (native)</span>
+      <span class="chip">MySQL / MariaDB</span>
+      <span class="chip">PDO Prepared Statement</span>
+      <span class="chip">Session (PHP native)</span>
+      <span class="chip">Tailwind CSS (CDN)</span>
+      <span class="chip">Font Awesome</span>
+      <span class="chip">Vanilla JavaScript</span>
+      <span class="chip">bcrypt (password_hash)</span>
+      <span class="chip">reveal.js (presentasi)</span>
+    </p>
+    <div class="twocol" style="margin-top:.5em">
+      <div class="card"><h4>Backend</h4><p>PHP murni tanpa framework — logika & view menyatu di file <code>.php</code>; DB via PDO.</p></div>
+      <div class="card"><h4>Frontend</h4><p>Tailwind utility class + <code>app.css/app.js</code> untuk animasi & micro-interactions.</p></div>
+    </div>
+  </section>
+
+  <!-- 5. STRUKTUR FOLDER -->
+  <section>
+    <p class="kicker">Struktur</p>
+    <h2>Struktur Folder</h2>
+    <pre class="flow">tiketPantai/
+├── <b>db.php</b>            <span style="color:#94a3b8"># koneksi database (PDO)</span>
+├── <b>database.sql</b>      <span style="color:#94a3b8"># skema + seed</span>
+├── <b>seed.php</b>          <span style="color:#94a3b8"># buat akun admin/user</span>
+├── index.php             <span style="color:#94a3b8"># beranda</span>
+├── destination.php       <span style="color:#94a3b8"># detail + ulasan</span>
+├── destinations.php      <span style="color:#94a3b8"># API JSON</span>
+├── checkout.php          <span style="color:#94a3b8"># pilih tiket & bayar</span>
+├── process_order.php     <span style="color:#94a3b8"># simpan pesanan</span>
+├── orders.php            <span style="color:#94a3b8"># riwayat pesanan</span>
+├── orders_update.php     <span style="color:#94a3b8"># API ubah status</span>
+├── review_save.php       <span style="color:#94a3b8"># handler ulasan</span>
+├── payments.php          <span style="color:#94a3b8"># konfigurasi bayar</span>
+├── auth/  (login · register · logout)
+├── admin/ (index · stats · users · tickets · *_save)
+├── assets/ (app.css · app.js)
+├── beaches/ · uploads/  <span style="color:#94a3b8"># gambar</span></pre>
+  </section>
+
+  <!-- 6. ARSITEKTUR / ALUR -->
+  <section>
+    <p class="kicker">Alur Sistem</p>
+    <h2>Alur Pengguna</h2>
+    <pre class="flow"><b>Wisatawan</b>
+  │  index.php → destination.php (detail + ulasan)
+  ▼
+checkout.php  ── pilih tiket, tanggal, metode bayar
+  │  POST
+  ▼
+process_order.php ── validasi harga dari DB → simpan <b>orders + order_items</b>
+  │
+  ▼
+orders.php ── riwayat + instruksi pembayaran (status: <b>pending</b>)
+
+<b>Admin</b>  → admin/index.php → ubah status (<b>pending→paid→completed</b>)
+                       → CRUD destinasi / tiket</pre>
+  </section>
+
+  <!-- 7. DATABASE / ERD -->
+  <section>
+    <p class="kicker">Database</p>
+    <h2>Entity Relationship (ERD)</h2>
+    <pre class="flow"><b>users</b> (1) ─────< orders >───── (1) <b>destinations</b>
+                       │                    │
+                       │                    └────< <b>ticket_types</b>
+                       │                           ▲
+                       └────< <b>order_items</b> >────┘
+
+<b>reviews</b> ──> destinations   <span style="color:#94a3b8">(1 user : 1 destinasi, unik)</span>
+reviews ──> users</pre>
+    <p class="small">Relasi: 1 pesanan punya banyak item; 1 destinasi punya banyak jenis tiket; 1 user hanya boleh 1 ulasan per destinasi.</p>
+  </section>
+
+  <!-- 8. SKEMA TABEL -->
+  <section>
+    <p class="kicker">Database</p>
+    <h2>Skema Tabel</h2>
+    <table>
+      <tr><th>Tabel</th><th>Fungsi</th><th>Field Kunci</th></tr>
+      <tr><td><code>users</code></td><td>Akun pengguna</td><td>email, password_hash, role</td></tr>
+      <tr><td><code>destinations</code></td><td>Destinasi pantai</td><td>slug, price, rating, is_active</td></tr>
+      <tr><td><code>ticket_types</code></td><td>Jenis tiket/fasilitas</td><td>price, unit, destination_id</td></tr>
+      <tr><td><code>orders</code></td><td>Header pesanan</td><td>order_number, total_amount, status</td></tr>
+      <tr><td><code>order_items</code></td><td>Detail item</td><td>quantity, subtotal</td></tr>
+      <tr><td><code>reviews</code></td><td>Ulasan</td><td>rating, comment (unik per user)</td></tr>
+    </table>
+  </section>
+
+  <!-- 9. KONFIGURASI & DB -->
+  <section>
+    <p class="kicker">Modul Inti</p>
+    <h2>Konfigurasi & Database</h2>
+    <div class="cardgrid">
+      <div class="card"><h4><span class="ic">🔧</span> db.php</h4><p>Koneksi tunggal via PDO. Opsi: <code>ERRMODE_EXCEPTION</code>, <code>FETCH_ASSOC</code>, <code>EMULATE_PREPARES=false</code> (anti SQL injection). Di-<code>return</code> ke semua file.</p></div>
+      <div class="card"><h4><span class="ic">🗄️</span> database.sql</h4><p>6 tabel + seed (admin, user, 3 pantai, 7 tiket/pantai). FK dengan <code>ON DELETE CASCADE</code>.</p></div>
+      <div class="card"><h4><span class="ic">🌱</span> seed.php</h4><p>Buat akun demo via CLI (<code>php seed.php</code>). Password di-hash bcrypt dengan <code>INSERT IGNORE</code>.</p></div>
+      <div class="card"><h4><span class="ic">💳</span> payments.php</h4><p>Konfigurasi Bank, E-Wallet, QRIS, Lokasi. Fungsi <code>resolve_payment()</code> terjemahkan metode → instruksi.</p></div>
+    </div>
+  </section>
+
+  <!-- 10. HALAMAN PUBLIK -->
+  <section>
+    <p class="kicker">Front-end</p>
+    <h2>Halaman Publik</h2>
+    <table>
+      <tr><th>File</th><th>Fungsi</th></tr>
+      <tr><td><code>index.php</code></td><td>Beranda — hero slideshow + kartu destinasi</td></tr>
+      <tr><td><code>destination.php</code></td><td>Detail pantai + sistem ulasan bintang</td></tr>
+      <tr><td><code>destinations.php</code></td><td>API JSON daftar destinasi (camelCase)</td></tr>
+    </table>
+    <p class="small">Hero memakai slideshow autoplay (<code>app.js</code>), kartu destinasi menampilkan rating, harga, dan tombol "Beli Tiket".</p>
+  </section>
+
+  <!-- 11. CHECKOUT & PEMESANAN -->
+  <section>
+    <p class="kicker">Transaksi</p>
+    <h2>Checkout & Pemesanan</h2>
+    <div class="twocol">
+      <div class="card"><h4><span class="ic">🛒</span> checkout.php</h4><p>Pilih jenis & jumlah tiket, tanggal kunjungan, metode pembayaran. JS menghitung <b>total real-time</b> & memvalidasi sebelum submit.</p></div>
+      <div class="card"><h4><span class="ic">✅</span> process_order.php</h4><p>Validasi harga dari <b>DB</b> (bukan client), generate <code>TP-timestamp-xxx</code>, lalu simpan via <b>transaksi</b> (orders + order_items).</p></div>
+    </div>
+    <blockquote>💡 Keamanan: harga & total dihitung ulang di server, jadi client tidak bisa memanipulasi harga.</blockquote>
+  </section>
+
+  <!-- 12. PEMBAYARAN -->
+  <section>
+    <p class="kicker">Pembayaran</p>
+    <h2>Metode Pembayaran</h2>
+    <div class="cardgrid">
+      <div class="card"><h4>🏦 Transfer Bank</h4><p>BCA · Mandiri · BNI · BRI</p></div>
+      <div class="card"><h4>📱 E-Wallet</h4><p>GoPay · DANA · ShopeePay · OVO</p></div>
+      <div class="card"><h4>🔳 QRIS</h4><p>Scan kode QR statis</p></div>
+      <div class="card"><h4>📍 Bayar di Lokasi</h4><p>Tunai saat kunjungan</p></div>
+    </div>
+    <p class="small">Disimpan sebagai <code>orders.payment_method</code> (kelompok) + <code>orders.payment_detail</code> (provider). Nomor rekening bisa diubah di <code>payments.php</code> tanpa sentuh DB.</p>
+  </section>
+
+  <!-- 13. PESANAN & ULASAN -->
+  <section>
+    <p class="kicker">Pasca-transaksi</p>
+    <h2>Pesanan & Ulasan</h2>
+    <table>
+      <tr><th>File</th><th>Fungsi</th></tr>
+      <tr><td><code>orders.php</code></td><td>Riwayat pesanan + instruksi bayar saat status <code>pending</code></td></tr>
+      <tr><td><code>orders_update.php</code></td><td>API <code>PATCH</code> ubah status pesanan</td></tr>
+      <tr><td><code>review_save.php</code></td><td>Upsert ulasan (1/user/destinasi) + update <b>rating agregat</b></td></tr>
+    </table>
+    <p class="small">Rating & jumlah ulasan disimpan denormalisasi di tabel <code>destinations</code> agar cepat ditampilkan.</p>
+    <div style="margin-top:.6em">
+      <span class="chip">pending</span><span class="chip">paid</span><span class="chip">completed</span><span class="chip">cancelled</span>
+    </div>
+  </section>
+
+  <!-- 14. AUTENTIKASI -->
+  <section>
+    <p class="kicker">Keamanan</p>
+    <h2>Autentikasi</h2>
+    <div class="cardgrid">
+      <div class="card"><h4><span class="ic">🔐</span> login.php</h4><p>Cocokkan email + <code>password_verify()</code> bcrypt → simpan <code>$_SESSION['user']</code>.</p></div>
+      <div class="card"><h4><span class="ic">📝</span> register.php</h4><p>Validasi (email unik, min 6 karakter, konfirmasi) → <code>password_hash()</code> → auto-login.</p></div>
+      <div class="card"><h4><span class="ic">🚪</span> logout.php</h4><p>Bersihkan session & cookie, lalu <code>session_destroy()</code>.</p></div>
+      <div class="card"><h4><span class="ic">🛡️</span> Role</h4><p><code>user</code> & <code>admin</code>. Halaman admin dicek <code>role === 'admin'</code>.</p></div>
+    </div>
+  </section>
+
+  <!-- 15. ADMIN -->
+  <section>
+    <p class="kicker">Back-office</p>
+    <h2>Dashboard Admin</h2>
+    <div style="text-align:center;margin:.4em 0">
+      <span class="stat"><span class="n">👥</span><span class="l">Pengguna</span></span>
+      <span class="stat"><span class="n">🛒</span><span class="l">Pesanan</span></span>
+      <span class="stat"><span class="n">💰</span><span class="l">Pendapatan</span></span>
+      <span class="stat"><span class="n">📍</span><span class="l">Destinasi</span></span>
+    </div>
+    <p><b>admin/index.php</b> — statistik + tabel manajemen:</p>
+    <ul>
+      <li><b>Pesanan</b> — ubah status via dropdown + modal detail</li>
+      <li><b>Pengguna</b> — daftar nama/email/role</li>
+      <li><b>Destinasi</b> — CRUD lengkap dengan upload gambar</li>
+    </ul>
+  </section>
+
+  <!-- 16. CRUD ADMIN -->
+  <section>
+    <p class="kicker">Back-office</p>
+    <h2>CRUD Destinasi & Tiket</h2>
+    <div class="twocol">
+      <div class="card"><h4><span class="ic">💾</span> destination_save.php</h4><p><code>create/update/delete/toggle_active</code>. Otomatis <code>slugify()</code> + slug unik + upload gambar dengan validasi <b>ekstensi & MIME type</b>.</p></div>
+      <div class="card"><h4><span class="ic">🎫</span> tickets.php + ticket_save.php</h4><p>Kelola jenis tiket/fasilitas per pantai (nama, harga, satuan, keterangan) — tiap pantai bisa berbeda.</p></div>
+    </div>
+    <blockquote>⚠️ Proteksi: destinasi/tiket yang sudah dipakai pesanan tidak bisa dihapus (FK constraint 1451).</blockquote>
+  </section>
+
+  <!-- 17. API -->
+  <section>
+    <p class="kicker">Integrasi</p>
+    <h2>REST API (JSON)</h2>
+    <table>
+      <tr><th>Endpoint</th><th>Method</th><th>Fungsi</th></tr>
+      <tr><td><code>destinations.php</code></td><td>GET</td><td>Daftar destinasi</td></tr>
+      <tr><td><code>orders.php</code></td><td>GET/POST</td><td>Daftar/buat pesanan</td></tr>
+      <tr><td><code>orders_update.php</code></td><td>PATCH</td><td>Ubah status</td></tr>
+      <tr><td><code>admin/stats.php</code></td><td>GET</td><td>Statistik dashboard</td></tr>
+      <tr><td><code>admin/users.php</code></td><td>GET</td><td>Daftar pengguna</td></tr>
+      <tr><td><code>auth/login.php</code> · <code>register.php</code></td><td>POST</td><td>Autentikasi</td></tr>
+    </table>
+    <p class="small">Header <code>Access-Control-Allow-Origin: *</code> + penanganan <code>OPTIONS</code> untuk CORS.</p>
+  </section>
+
+  <!-- 18. ASET -->
+  <section>
+    <p class="kicker">Front-end</p>
+    <h2>Aset & Interaksi</h2>
+    <div class="twocol">
+      <div class="card"><h4><span class="ic">🎨</span> app.css</h4><p>Tema teal, custom scrollbar, hero gradient, scroll-reveal, hover kartu, efek kilau tombol, animasi slideshow Ken Burns.</p></div>
+      <div class="card"><h4><span class="ic">⚙️</span> app.js</h4><p>3 modul: <code>initReveal()</code> (IntersectionObserver), <code>initNav()</code> (shadow saat scroll), <code>initSlideshow()</code> (autoplay).</p></div>
+    </div>
+    <blockquote>♿ Aksesibilitas: <code>prefers-reduced-motion</code> mematikan semua animasi bagi yang membutuhkan.</blockquote>
+  </section>
+
+  <!-- 19. KEAMANAN -->
+  <section>
+    <p class="kicker">Quality</p>
+    <h2>Aspek Keamanan</h2>
+    <ul>
+      <li>🔐 <b>SQL Injection</b> — semua query pakai <b>PDO Prepared Statement</b>.</li>
+      <li>🔑 <b>Password</b> — di-hash bcrypt (<code>password_hash</code>), tidak plaintext.</li>
+      <li>🛡️ <b>Authorization</b> — guard login & role admin di setiap handler sensitif.</li>
+      <li>🖼️ <b>Upload</b> — validasi ekstensi <i>dan</i> MIME type asli gambar.</li>
+      <li>💸 <b>Harga</b> — dihitung ulang di server, bukan dari input client.</li>
+      <li>🏷️ <b>XSS</b> — output di-escape dengan <code>htmlspecialchars()</code>.</li>
+      <li>↩️ <b>Integritas</b> — transaksi DB (commit/rollback) + FK cascade.</li>
+    </ul>
+  </section>
+
+  <!-- 20. DEMO / CARA JALANKAN -->
+  <section>
+    <p class="kicker">Hands-on</p>
+    <h2>Cara Menjalankan</h2>
+    <ol>
+      <li>Import <code>database.sql</code> via phpMyAdmin / MySQL CLI.</li>
+      <li>Sesuaikan kredensial di <code>db.php</code> (host, nama DB, user, pass).</li>
+      <li>(Opsional) Jalankan <code>php seed.php</code> untuk akun demo.</li>
+      <li>Buka <code>http://localhost/tiketPantai/</code> di Laragon.</li>
+    </ol>
+    <div class="twocol" style="margin-top:.5em">
+      <div class="card"><h4>👑 Admin</h4><p><code>admin@tiketpantai.com</code><br><code>admin123</code></p></div>
+      <div class="card"><h4>🙋 User</h4><p><code>user@example.com</code><br><code>user123</code></p></div>
+    </div>
+  </section>
+
+  <!-- 21. KESIMPULAN -->
+  <section class="cover" data-background-gradient="linear-gradient(135deg,#0f766e,#06b6d4)">
+    <div class="logo">✅</div>
+    <h1>Terima Kasih</h1>
+    <p>TiketPantai — E-Ticketing Wisata Pantai Paranggupito</p>
+    <p class="small" style="color:rgba(255,255,255,.85)">PHP · MySQL · Tailwind · PDO · Session</p>
+    <span class="badge">Diskusi & Tanya Jawab</span>
+  </section>
+
+</div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/plugin/highlight/highlight.js"></script>
+<script>
+  Reveal.initialize({
+    controls: true,
+    progress: true,
+    slideNumber: 'c/t',
+    hash: true,
+    transition: 'slide',
+    backgroundTransition: 'fade',
+    width: 1100,
+    height: 700,
+    margin: 0.06,
+    plugins: [RevealHighlight]
+  });
+</script>
+</body>
+</html>
