@@ -9,7 +9,7 @@ $pdo = require __DIR__ . '/db.php';
 
 // Judul halaman, dipakai di tag <title>
 $title = 'Home';
-
+  
 // Ambil data user yang sedang login (jika ada). Jika belum login, nilainya null.
 $user = $_SESSION['user'] ?? null;
 
