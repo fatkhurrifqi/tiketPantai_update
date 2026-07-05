@@ -1,38 +1,24 @@
 /* =============================================================
    TiketPantai — Micro-interactions
-   1) Scroll reveal via IntersectionObserver
-   2) Navbar shadow saat di-scroll
+   1) Navbar shadow saat di-scroll
+   2) Hero slideshow (autoplay + dots)
+   3) Mobile nav toggle (hamburger)
    Dimuat di semua halaman publik.
+
+   Catatan: fitur "scroll reveal" (IntersectionObserver + class
+   .reveal/.is-visible) sudah dihapus dari sini karena style CSS
+   untuk .reveal sudah dinonaktifkan sebelumnya — jadi kode itu
+   cuma menambah class tanpa efek visual apa pun (kerja sia-sia).
    ============================================================= */
 (function () {
   'use strict';
 
-  var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  /* ---- 1) Scroll reveal ---- */
-  function initReveal() {
-    var els = document.querySelectorAll('.reveal');
-    if (!els.length) return;
-
-    // Fallback: jika observer tidak didukung, tampilkan semua.
-    if (prefersReduced || !('IntersectionObserver' in window)) {
-      els.forEach(function (el) { el.classList.add('is-visible'); });
-      return;
-    }
-
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-visible');
-          io.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-
-    els.forEach(function (el) { io.observe(el); });
-  }
-
-  /* ---- 2) Navbar shadow on scroll ---- */
+  /* ---- 1) Navbar shadow on scroll ----
+     Menambah class 'tp-nav--scrolled' begitu halaman discroll lebih
+     dari 8px, supaya navbar dapat shadow/background solid. Class ini
+     dihapus lagi kalau user scroll balik ke paling atas. Dipakai
+     'passive: true' supaya event scroll tidak menghambat performa
+     scroll di perangkat mobile. */
   function initNav() {
     var nav = document.querySelector('.tp-nav');
     if (!nav) return;
@@ -44,7 +30,14 @@
     window.addEventListener('scroll', onScroll, { passive: true });
   }
 
-  /* ---- 3) Hero slideshow (autoplay + dots) ---- */
+  /* ---- 2) Hero slideshow (autoplay + dots) ----
+     Mengatur slideshow foto destinasi di hero:
+     - show(n): pindah ke slide ke-n, sinkronkan class 'is-active' pada
+       slide & dot, dan update teks caption sesuai nama destinasi.
+     - start()/stop(): jalankan/hentikan auto-play tiap 5 detik.
+     - Klik salah satu dot langsung lompat ke slide itu & reset timer.
+     - Auto-play dijeda saat tab browser tidak aktif (document.hidden),
+       supaya tidak buang resource saat user pindah tab. */
   function initSlideshow() {
     var root = document.querySelector('.tp-slides');
     if (!root) return;
@@ -59,8 +52,12 @@
 
     function show(n) {
       idx = (n + slides.length) % slides.length;
-      slides.forEach(function (s, i) { s.classList.toggle('is-active', i === idx); });
-      dots.forEach(function (d, i) { d.classList.toggle('is-active', i === idx); });
+      slides.forEach(function (s, i) {
+        s.classList.toggle('is-active', i === idx);
+      });
+      dots.forEach(function (d, i) {
+        d.classList.toggle('is-active', i === idx);
+      });
       if (caption && dots[idx] && dots[idx].dataset.name) {
         caption.textContent = dots[idx].dataset.name;
       }
@@ -68,25 +65,41 @@
 
     function start() {
       stop();
-      if (slides.length > 1) timer = setInterval(function () { show(idx + 1); }, INTERVAL);
+      if (slides.length > 1)
+        timer = setInterval(function () {
+          show(idx + 1);
+        }, INTERVAL);
     }
-    function stop() { if (timer) { clearInterval(timer); timer = null; } }
+    function stop() {
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+    }
 
     // Klik dot → lompat ke slide & reset timer
     dots.forEach(function (d, i) {
-      d.addEventListener('click', function () { show(i); start(); });
+      d.addEventListener('click', function () {
+        show(i);
+        start();
+      });
     });
 
     // Jeda saat tab tidak aktif (hemat resource)
     document.addEventListener('visibilitychange', function () {
-      if (document.hidden) stop(); else start();
+      if (document.hidden) stop();
+      else start();
     });
 
     show(0);
     start();
   }
 
-  /* ---- 4) Mobile nav toggle (hamburger) ---- */
+  /* ---- 3) Mobile nav toggle (hamburger) ----
+     Membuka/menutup panel menu mobile saat tombol hamburger diklik.
+     Ikon berubah dari 'bars' ke 'xmark' (dan sebaliknya) sesuai status
+     buka/tutup, plus atribut aria-expanded diperbarui untuk aksesibilitas
+     (pembaca layar). Ini fungsi inti navigasi di layar kecil, wajib ada. */
   function initMobileNav() {
     var btns = document.querySelectorAll('[data-nav-toggle]');
     if (!btns.length) return;
@@ -104,10 +117,14 @@
     });
   }
 
+  // Jalankan semua fitur setelah DOM siap (atau langsung jika sudah siap)
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () { initReveal(); initNav(); initSlideshow(); initMobileNav(); });
+    document.addEventListener('DOMContentLoaded', function () {
+      initNav();
+      initSlideshow();
+      initMobileNav();
+    });
   } else {
-    initReveal();
     initNav();
     initSlideshow();
     initMobileNav();

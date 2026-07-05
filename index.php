@@ -1,20 +1,29 @@
 <?php
+// Memulai session PHP agar bisa membaca data login user ($_SESSION)
 session_start();
+
+// Mengambil koneksi database (PDO) dari file db.php
 $pdo = require __DIR__ . '/db.php';
+
+// Judul halaman, dipakai di tag <title>
 $title = 'Home';
+
+// Ambil data user yang sedang login (jika ada). Jika belum login, nilainya null.
 $user = $_SESSION['user'] ?? null;
 
-// Fetch destinations
+// ===== Ambil data destinasi wisata =====
+// Hanya destinasi yang aktif (is_active = TRUE), diurutkan dari yang terbaru
 $stmt = $pdo->query('SELECT * FROM destinations WHERE is_active = TRUE ORDER BY created_at DESC');
 $destinations = $stmt->fetchAll();
 
-// Fetch ticket types for each destination
+// ===== Ambil jenis tiket untuk setiap destinasi =====
+// &$dest artinya kita mengubah langsung isi array $destinations (reference)
 foreach ($destinations as &$dest) {
     $ttStmt = $pdo->prepare('SELECT * FROM ticket_types WHERE destination_id = ? ORDER BY price ASC');
     $ttStmt->execute([$dest['id']]);
     $dest['ticket_types'] = $ttStmt->fetchAll();
 }
-unset($dest);
+unset($dest); // Wajib di-unset setelah foreach by-reference, untuk mencegah bug data ke-overwrite di loop lain
 ?>
 <!doctype html>
 <html lang="id">
@@ -23,14 +32,26 @@ unset($dest);
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title><?= htmlspecialchars($title) ?> - TiketPantai</title>
+
+  <!-- Tailwind CSS versi browser (langsung compile di client, cocok untuk prototipe) -->
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+  <!-- Font Awesome: dipakai untuk SEMUA icon di halaman ini -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+  <!--
+    DIHAPUS: Bootstrap Icons (bootstrap-icons@1.11.1)
+    Alasan: tidak ada satupun class "bi-" yang dipakai di seluruh halaman ini,
+    semua icon sudah pakai Font Awesome (fa-solid / fa-brands).
+    Load library yang tidak dipakai hanya menambah waktu loading halaman.
+  -->
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link
     href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="assets/app.css?v=4">
+
+  <link rel="stylesheet" href="assets/app.css?v=5">
   <style>
   body {
     font-family: 'Inter', sans-serif;
@@ -47,16 +68,20 @@ unset($dest);
 
 <body class="tp-page-bg font-sans antialiased min-h-screen flex flex-col">
 
-  <!-- Navbar -->
+  <!-- ===================== NAVBAR ===================== -->
   <nav class="tp-nav tp-navbar sticky top-0 z-50 shadow-md">
     <div class="max-w-7xl mx-auto px-4 sm:px-6">
       <div class="flex items-center justify-between h-16">
+
+        <!-- Logo / brand, klik untuk balik ke beranda -->
         <a href="index.php" class="flex items-center gap-2 hover:opacity-80 transition">
           <div class="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center">
             <i class="fa-solid fa-water text-white text-base"></i>
           </div>
           <span class="text-xl font-bold text-white">tiket<span class="text-cyan-100">Pantai</span></span>
         </a>
+
+        <!-- Menu navigasi desktop (disembunyikan di mobile via 'hidden md:flex') -->
         <div class="hidden md:flex items-center gap-1">
           <a href="index.php" class="tp-nav-link tp-nav-link--active px-3 py-1.5 text-sm font-medium">Beranda</a>
           <?php if ($user): ?>
@@ -67,6 +92,8 @@ unset($dest);
           <?php endif; ?>
           <?php endif; ?>
         </div>
+
+        <!-- Area akun: login/daftar atau profil user (desktop) -->
         <div class="hidden md:flex items-center gap-3">
           <?php if ($user): ?>
           <div class="tp-nav-glass flex items-center gap-2 px-3 py-1.5 rounded-full">
@@ -85,14 +112,16 @@ unset($dest);
             class="text-sm font-bold text-teal-700 bg-white hover:bg-cyan-50 px-4 py-2 rounded-xl shadow">Daftar</a>
           <?php endif; ?>
         </div>
-        <!-- Hamburger (mobile) -->
+
+        <!-- Tombol hamburger, hanya tampil di mobile ('md:hidden') -->
         <button type="button" data-nav-toggle="tpMobileNav" aria-label="Buka menu" aria-expanded="false"
           class="md:hidden w-10 h-10 flex items-center justify-center text-white rounded-lg hover:bg-white/15 transition">
           <i data-nav-icon class="fa-solid fa-bars text-lg"></i>
         </button>
       </div>
     </div>
-    <!-- Panel menu mobile -->
+
+    <!-- Panel menu mobile: muncul saat hamburger diklik (di-toggle oleh assets/app.js) -->
     <div id="tpMobileNav" class="md:hidden hidden tp-mobile-menu border-t border-white/15">
       <div class="max-w-7xl mx-auto px-4 py-3 space-y-1">
         <a href="index.php" class="block px-3 py-2 rounded-lg text-sm font-medium hover:bg-white/15">Beranda</a>
@@ -119,20 +148,22 @@ unset($dest);
     </div>
   </nav>
 
-  <!-- Hero Section -->
+  <!-- ===================== HERO SECTION ===================== -->
   <section class="relative overflow-hidden text-white">
-    <!-- Background slideshow (foto destinasi, autoplay) -->
+
+    <!-- Slideshow background: satu <div> per destinasi, dipindah oleh app.js (class is-active) -->
     <div class="tp-slides">
       <?php foreach ($destinations as $i => $dest): ?>
       <div class="tp-slide <?= $i === 0 ? 'is-active' : '' ?>"
         style="background-image: url('<?= htmlspecialchars($dest['image']) ?>');"></div>
       <?php endforeach; ?>
     </div>
-    <!-- Overlay teal: teks tetap terbaca & selaras tema -->
+
+    <!-- Overlay gelap-teal supaya teks tetap terbaca di atas foto -->
     <div class="tp-hero-overlay absolute inset-0 z-[2]"></div>
 
     <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-20 sm:py-28">
-      <div class="max-w-2xl reveal is-visible">
+      <div class="max-w-2xl is-visible">
         <span
           class="tp-badge-glass inline-flex items-center gap-1.5 text-white text-xs font-medium px-3.5 py-1.5 rounded-full mb-5">
           <i class="fa-solid fa-sun text-amber-300 text-[11px]"></i> E-Tiketing Paranggupito
@@ -158,22 +189,22 @@ unset($dest);
         </div>
       </div>
 
-      <div class="grid grid-cols-3 gap-3 sm:gap-5 mt-14 max-w-xl reveal is-visible" style="--reveal-delay:120ms">
+      <!--
+        Statistik ringkas: jumlah destinasi diambil DINAMIS dari database (count($destinations)),
+        tapi "Ulasan" dan "Rating" DIHAPUS di versi ini karena sebelumnya di-hardcode
+        ("1.9K+" dan "4.6") — angka itu tidak pernah berubah walau data ulasan asli berubah,
+        sehingga berpotensi menyesatkan pengunjung.
+        Jika nanti sudah ada tabel ulasan/rating di database, tinggal tambahkan lagi
+        dengan query SUM/AVG yang sebenarnya.
+      -->
+      <div class="grid grid-cols-1 gap-3 sm:gap-5 mt-14 max-w-xs reveal is-visible" style="--reveal-delay:120ms">
         <div class="tp-stat px-3 py-4 sm:px-5 sm:py-5 text-center">
           <div class="font-display text-2xl sm:text-4xl font-extrabold"><?= count($destinations) ?>+</div>
           <div class="text-white/75 text-[11px] sm:text-sm mt-0.5">Destinasi</div>
         </div>
-        <div class="tp-stat px-3 py-4 sm:px-5 sm:py-5 text-center">
-          <div class="font-display text-2xl sm:text-4xl font-extrabold">1.9K+</div>
-          <div class="text-white/75 text-[11px] sm:text-sm mt-0.5">Ulasan</div>
-        </div>
-        <div class="tp-stat px-3 py-4 sm:px-5 sm:py-5 text-center">
-          <div class="font-display text-2xl sm:text-4xl font-extrabold">4.6</div>
-          <div class="text-white/75 text-[11px] sm:text-sm mt-0.5">Rating</div>
-        </div>
       </div>
 
-      <!-- Dots + caption slideshow -->
+      <!-- Dots navigasi slideshow: jumlahnya mengikuti jumlah destinasi -->
       <div class="mt-10 reveal is-visible">
         <div class="tp-dots" role="tablist" aria-label="Galeri pantai">
           <?php foreach ($destinations as $i => $dest): ?>
@@ -186,6 +217,8 @@ unset($dest);
             class="tp-caption"><?= htmlspecialchars($destinations[0]['name'] ?? '') ?></span></p>
       </div>
     </div>
+
+    <!-- Bentuk gelombang SVG sebagai transisi visual ke section berikutnya -->
     <div class="absolute bottom-0 w-full leading-[0] z-10">
       <svg viewBox="0 0 1440 80" fill="none" preserveAspectRatio="none" class="w-full h-[40px] sm:h-[70px]">
         <path d="M0 80V40C240 70 480 10 720 40C960 70 1200 10 1440 40V80H0Z" fill="#f9fafb" />
@@ -193,7 +226,7 @@ unset($dest);
     </div>
   </section>
 
-  <!-- Destinations -->
+  <!-- ===================== DAFTAR DESTINASI ===================== -->
   <section id="destinasi" class="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-20 scroll-mt-20">
     <div class="flex items-end justify-between mb-10 reveal">
       <div>
@@ -202,15 +235,17 @@ unset($dest);
         <h2 class="font-display text-3xl sm:text-4xl font-extrabold text-gray-900">Wisata Pantai Pilihan</h2>
         <p class="text-gray-500 text-sm mt-2">Temukan pantai eksotis di Paranggupito, Wonogiri</p>
       </div>
-      <div class="hidden sm:flex gap-2">
-        <button class="bg-teal-500 text-white px-4 py-1.5 rounded-full text-sm font-medium shadow-sm">Semua</button>
-        <button
-          class="bg-white text-gray-600 border border-gray-200 px-4 py-1.5 rounded-full text-sm font-medium hover:border-teal-300 hover:text-teal-600 transition">Obyek
-          Wisata</button>
-      </div>
+      <!--
+        DIHAPUS: tombol filter "Semua" / "Obyek Wisata".
+        Alasan: tidak ada atribut (onclick / data-filter) atau script yang menghubungkan
+        tombol ini ke logika filter apa pun — jadi selama ini cuma dekorasi yang
+        terlihat bisa diklik tapi tidak melakukan apa-apa. Kalau nanti mau ada filter
+        kategori sungguhan, bisa ditambahkan lagi dengan query berdasarkan $_GET['kategori'].
+      -->
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
       <?php foreach ($destinations as $dest): ?>
+      <!-- Satu kartu per destinasi -->
       <div class="reveal tp-card bg-white rounded-3xl overflow-hidden shadow-md border border-gray-100">
         <a href="destination.php?wisata=<?= urlencode($dest['slug']) ?>" class="tp-zoom block relative h-56">
           <img src="<?= htmlspecialchars($dest['image']) ?>" alt="<?= htmlspecialchars($dest['name']) ?>"
@@ -239,6 +274,8 @@ unset($dest);
             <i class="fa-solid fa-location-dot mt-0.5 text-gray-400 shrink-0"></i>
             <p class="line-clamp-2"><?= htmlspecialchars($dest['location']) ?></p>
           </div>
+          <!-- Rating & ulasan: TETAP DIPERTAHANKAN karena datanya asli dari database ($dest['rating']/$dest['reviews']),
+               beda dengan statistik ulasan global di Hero yang sebelumnya di-hardcode -->
           <div class="flex items-center gap-1.5 text-xs text-gray-500 mb-2">
             <i class="fa-solid fa-star text-amber-400"></i>
             <?php if ($dest['reviews'] > 0): ?>
@@ -268,7 +305,7 @@ unset($dest);
     </div>
   </section>
 
-  <!-- Features -->
+  <!-- ===================== FITUR / PESONA ===================== -->
   <section id="pesona" class="bg-gradient-to-b from-cyan-50/70 via-white to-white py-20 scroll-mt-20">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 text-center">
       <div class="reveal">
@@ -280,7 +317,8 @@ unset($dest);
       </div>
       <div class="flex flex-wrap justify-center gap-6 max-w-6xl mx-auto">
         <?php
-        // Dinamis dari tabel destinasi → hapus/nonaktifkan destinasi, kartunya hilang.
+        // Kombinasi warna gradient + icon, dipakai bergantian (rotasi) untuk tiap kartu fitur.
+        // Sudah dinamis: kalau destinasi dihapus/dinonaktifkan, kartunya otomatis hilang.
         $featStyles = [
           ['from-teal-500', 'to-cyan-600', 'fa-anchor'],
           ['from-emerald-500', 'to-teal-600', 'fa-mountain'],
@@ -295,7 +333,7 @@ unset($dest);
         ?>
         <p class="text-gray-400 col-span-full py-8">Belum ada destinasi untuk ditampilkan.</p>
         <?php else: foreach (array_slice($destinations, 0, 8) as $fi => $fd):
-          $st = $featStyles[$fi % count($featStyles)];
+          $st = $featStyles[$fi % count($featStyles)]; // % supaya style berulang jika destinasi > 8
         ?>
         <div
           class="reveal tp-card flex flex-col items-center text-center px-6 py-8 rounded-3xl text-white shadow-lg bg-gradient-to-br <?= $st[0] ?> <?= $st[1] ?> w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)]"
@@ -312,7 +350,7 @@ unset($dest);
     </div>
   </section>
 
-  <!-- Footer -->
+  <!-- ===================== FOOTER ===================== -->
   <footer class="bg-[#0b1325] text-[#a0aec0] text-xs mt-auto">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 py-12">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-10">
@@ -352,6 +390,8 @@ unset($dest);
       </div>
     </div>
   </footer>
+
+  <!-- Script untuk interaksi: toggle menu mobile, slideshow otomatis, animasi 'reveal', dll -->
   <script src="assets/app.js"></script>
 </body>
 

@@ -1,172 +1,151 @@
 /* =============================================================
-   TiketPantai — Global polish & micro-interactions
-   Dimuat bersama Tailwind (browser CDN). Hanya berisi hal yang
-   tidak mudah dilakukan dengan utility class: animasi, gradient
-   berlapis, scrollbar, dan helper komponen.
+   1. VARIABEL GLOBAL & BASE
    ============================================================= */
 
 :root {
-  --tp-teal: #14b8a6;
-  --tp-teal-deep: #0d9488;
-  --tp-cyan: #22d3ee;
-  --tp-ink: #0f172a;
-  --tp-shadow: 0 10px 30px -12px rgba(13, 148, 136, 0.25);
+  /* Shadow besar dipakai berulang (card, stat, dsb) supaya konsisten */
   --tp-shadow-lg: 0 24px 60px -20px rgba(15, 23, 42, 0.28);
 }
 
-/* ---------- Base ---------- */
+/* Scroll halus saat klik link anchor (#destinasi, #pesona) */
 html {
   scroll-behavior: smooth;
 }
 
-body {
+/* Rendering font (dimatikan/di-comment, tidak dipakai saat ini) */
+/* body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-}
+  text-rendering: optimizeLegibility; 
+}*/
 
-/* Selaraskan heading: gunakan balance agar baris lebih rapi */
-h1, h2, h3 {
-  text-wrap: balance;
-}
-
-p { text-wrap: pretty; }
-
-/* ---------- Custom scrollbar (subtle, branding teal) ---------- */
-* { scrollbar-width: thin; scrollbar-color: #99f6e4 transparent; }
-*::-webkit-scrollbar { width: 10px; height: 10px; }
-*::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #5eead4, #2dd4bf);
-  border-radius: 9999px;
-  border: 2px solid transparent;
-  background-clip: content-box;
-}
-*::-webkit-scrollbar-thumb:hover { background: #14b8a6; background-clip: content-box; }
-
-/* ---------- Hero glow: gradient berlapis + kilau lembut ---------- */
-.tp-hero {
-  background-color: #0d9488;
+/* Latar belakang utama halaman: radial gradient teal & sky yang sangat
+   tipis + fixed attachment supaya "menempel" saat discroll */
+.tp-page-bg {
+  background-color: #f8fafc;
   background-image:
-    radial-gradient(60% 80% at 85% 10%, rgba(34, 211, 238, 0.55) 0%, transparent 60%),
-    radial-gradient(50% 70% at 10% 90%, rgba(20, 184, 166, 0.55) 0%, transparent 55%),
-    linear-gradient(135deg, #0f766e 0%, #14b8a6 45%, #06b6d4 100%);
-  position: relative;
-}
-.tp-hero::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(120% 90% at 50% -10%, rgba(255, 255, 255, 0.18), transparent 45%);
+    radial-gradient(55% 45% at 100% 0%, rgba(20, 184, 166, 0.12) 0%, transparent 60%), radial-gradient(50% 40% at 0% 0%, rgba(56, 189, 248, 0.12) 0%, transparent 60%), linear-gradient(180deg, #f0fdfa 0%, #f8fafc 40%, #f8fafc 100%);
+  background-attachment: fixed;
 }
 
-/* Floating decorative blobs (opsional, tambah class .tp-hero-blob) */
-.tp-hero-blob {
-  position: absolute;
-  border-radius: 9999px;
-  filter: blur(40px);
-  opacity: 0.5;
-  pointer-events: none;
-}
-
-/* ---------- Scroll reveal ---------- */
-.reveal {
+/* Animasi reveal saat elemen discroll masuk viewport (dimatikan) */
+/* .reveal {
   opacity: 0;
   transform: translateY(24px);
-  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-              transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
   transition-delay: var(--reveal-delay, 0ms);
   will-change: opacity, transform;
 }
 .reveal.is-visible {
   opacity: 1;
   transform: none;
-}
+} */
 
-/* ---------- Card hover: angkat halus ---------- */
-.tp-card {
-  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-              box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-              border-color 0.35s ease;
-}
-.tp-card:hover {
-  transform: translateY(-6px);
-  box-shadow: var(--tp-shadow-lg);
-}
 
-/* Zoom gambar pada kartu destinasi saat hover */
-.tp-zoom { overflow: hidden; }
-.tp-zoom img {
-  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform;
-}
-.tp-zoom:hover img { transform: scale(1.08); }
+/* =============================================================
+   2. NAVBAR
+   ============================================================= */
 
-/* ---------- Tombol: kilau + tekan ---------- */
-.tp-btn {
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+/* Transisi umum navbar (shadow & background) saat class --scrolled aktif */
+.tp-nav {
+  transition:
+    box-shadow 0.3s ease,
+    background-color 0.3s ease;
 }
-.tp-btn::before {
-  content: "";
-  position: absolute;
-  top: 0; left: -120%;
-  width: 60%; height: 100%;
-  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.45), transparent);
-  transform: skewX(-20deg);
-  transition: left 0.6s ease;
-}
-.tp-btn:hover::before { left: 140%; }
-.tp-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 24px -10px rgba(13, 148, 136, 0.6); }
-.tp-btn:active { transform: translateY(0); }
-
-/* Gradient utama untuk tombol CTA */
-.tp-btn-gradient {
-  background-image: linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%);
-}
-.tp-btn-gradient:hover {
-  background-image: linear-gradient(135deg, #0d9488 0%, #0891b2 100%);
-}
-
-/* ---------- Badge glass ---------- */
-.tp-badge-glass {
-  background: rgba(255, 255, 255, 0.14);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.22);
-}
-
-/* ---------- Stat card pada hero ---------- */
-.tp-stat {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 1rem;
-}
-
-/* ---------- Floating animation (untuk ikon/dekoratif) ---------- */
-@keyframes tp-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-}
-.tp-float { animation: tp-float 4s ease-in-out infinite; }
-
-/* ---------- Navbar: shadow muncul setelah scroll ---------- */
-.tp-nav { transition: box-shadow 0.3s ease, background-color 0.3s ease; }
 .tp-nav.tp-nav--scrolled {
   box-shadow: 0 8px 30px -16px rgba(15, 23, 42, 0.35);
   background-color: rgba(255, 255, 255, 0.92);
 }
 
-/* ---------- Skeleton shimmer untuk gambar (opsional) ---------- */
-@keyframes tp-shimmer {
-  100% { transform: translateX(100%); }
+/* Navbar utama: gradient teal → cyan, teks putih */
+.tp-navbar {
+  background-image: linear-gradient(110deg, #0f766e 0%, #0d9488 38%, #0891b2 74%, #06b6d4 100%);
+  color: #fff;
+}
+.tp-navbar.tp-nav--scrolled {
+  box-shadow: 0 10px 30px -16px rgba(13, 148, 136, 0.55);
 }
 
-/* ---------- Hero slideshow (background foto pantai, autoplay) ---------- */
-.tp-slides { position: absolute; inset: 0; overflow: hidden; }
+/* Link menu di navbar (Beranda, Pesanan Saya, Admin) */
+.tp-navbar .tp-nav-link {
+  color: rgba(255, 255, 255, 0.92);
+  border-radius: 0.5rem;
+}
+.tp-navbar .tp-nav-link:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+.tp-navbar .tp-nav-link--active {
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
+}
+
+/* Pill kaca (glassmorphism) untuk avatar/nama user yang sedang login */
+.tp-nav-glass {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  color: #fff;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* Tombol outline putih transparan (mis. tombol "Masuk"/"Keluar") */
+.tp-nav-outline {
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  color: #fff;
+}
+.tp-nav-outline:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+/* Panel menu mobile (hamburger) */
+.tp-mobile-menu {
+  background-image: linear-gradient(180deg, #0d9488 0%, #0f766e 100%);
+  color: #fff;
+}
+
+
+/* =============================================================
+   3. HERO SECTION (banner atas + slideshow foto pantai)
+   ============================================================= */
+
+/* Kerangka hero (gradient background dimatikan, hanya position:relative
+   yang aktif karena dibutuhkan elemen slideshow di dalamnya) */
+.tp-hero {
+  /* background-color: #161a19; */
+  /* background-image:
+    radial-gradient(60% 80% at 85% 10%, rgba(182, 15, 43, 0.55) 0%, transparent 60%), radial-gradient(50% 70% at 10% 90%, rgba(20, 184, 166, 0.55) 0%, transparent 55%), linear-gradient(135deg, #0f766e 0%, #14b8a6 45%, #06b6d4 100%); */
+  position: relative;
+}
+
+/* Kilau lembut di atas hero (dimatikan) */
+/* .tp-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(120% 90% at 50% -10%, rgba(255, 255, 255, 0.18), transparent 45%); */
+/* } */
+
+/* Blob dekoratif melayang, opsional (dimatikan) */
+/* .tp-hero-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(40px);
+  opacity: 0.5;
+  pointer-events: none; */
+/* } */
+
+/* Wadah slideshow: menumpuk semua foto destinasi sebagai layer absolute */
+.tp-slides {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* Satu slide foto: transparan (opacity 0) secara default */
 .tp-slide {
   position: absolute;
   inset: 0;
@@ -176,43 +155,189 @@ p { text-wrap: pretty; }
   transition: opacity 1.6s ease-in-out;
   will-change: opacity;
 }
+
+/* Slide yang sedang tampil: fade-in (efek zoom Ken Burns dihapus karena
+   dianggap animasi hiasan yang kurang penting) */
 .tp-slide.is-active {
   opacity: 1;
   z-index: 1;
-  animation: tp-kenburns 7s ease-out forwards;
-}
-@keyframes tp-kenburns {
-  0%   { transform: scale(1.04); }
-  100% { transform: scale(1.16); }
 }
 
-/* Overlay: teks tetap terbaca + selaras tema teal */
+/* Overlay gradient teal di atas foto slideshow supaya teks putih tetap
+   kontras dan terbaca */
 .tp-hero-overlay {
-  background-image:
-    linear-gradient(90deg, rgba(4,47,46,0.90) 0%, rgba(13,148,136,0.66) 48%, rgba(8,145,178,0.42) 100%),
-    linear-gradient(180deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0) 32%, rgba(0,0,0,0) 78%);
+  background-image: linear-gradient(90deg, rgba(4, 47, 46, 0.9) 0%, rgba(13, 148, 136, 0.66) 48%, rgba(8, 145, 178, 0.42) 100%), linear-gradient(180deg, rgba(0, 0, 0, 0.18) 0%, rgba(0, 0, 0, 0) 32%, rgba(0, 0, 0, 0) 78%);
 }
 
-/* Dots navigasi slideshow */
-.tp-dots { display: inline-flex; align-items: center; gap: 0.5rem; }
+/* Titik-titik (dots) navigasi slideshow di bawah hero */
+.tp-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
 .tp-dot {
-  width: 9px; height: 9px;
+  width: 9px;
+  height: 9px;
   border-radius: 9999px;
   background: rgba(255, 255, 255, 0.45);
   border: 0;
   padding: 0;
   cursor: pointer;
-  transition: width 0.35s ease, background-color 0.35s ease;
+  transition:
+    width 0.35s ease,
+    background-color 0.35s ease;
 }
-.tp-dot:hover { background: rgba(255, 255, 255, 0.78); }
-.tp-dot.is-active { width: 26px; background: #ffffff; }
+.tp-dot:hover {
+  background: rgba(255, 255, 255, 0.78);
+}
+/* Dot aktif melebar jadi pill + putih solid, jadi indikator slide saat ini */
+.tp-dot.is-active {
+  width: 26px;
+  background: #ffffff;
+}
+
 
 /* =============================================================
-   Komponen tambahan: dashboard admin & halaman sukses
-   Memakai variabel --tp-* yang sudah ada agar selaras tema.
+   4. TOMBOL (BUTTON) & BADGE
    ============================================================= */
 
-/* ---------- Kartu statistik gradient (dashboard) ---------- */
+/* Efek kilau + tekan pada tombol umum (dimatikan) */
+/* .tp-btn { */
+  /* position: relative; */
+  /* overflow: hidden; */
+  /* transition:
+    transform 0.2s ease,
+    box-shadow 0.3s ease,
+    background-color 0.3s ease; */
+/* } */
+/* .tp-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.6s ease;
+}
+.tp-btn:hover::before {
+  left: 140%;
+}
+.tp-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -10px rgba(13, 148, 136, 0.6);
+}
+.tp-btn:active {
+  transform: translateY(0);
+} */
+
+/* Tombol CTA utama (mis. "Beli Tiket", "Lihat Destinasi"): gradient teal→cyan */
+.tp-btn-gradient {
+  background-image: linear-gradient(135deg, #14b8a6 0%, #06b6d4 100%);
+}
+.tp-btn-gradient:hover {
+  background-image: linear-gradient(135deg, #0d9488 0%, #0891b2 100%);
+}
+
+/* Badge kaca (glassmorphism) — dipakai untuk label kecil di atas hero,
+   contoh: "E-Tiketing Paranggupito". Diletakkan tepat di bawah tombol
+   gradient karena sama-sama elemen kecil di area hero. */
+.tp-badge-glass {
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+/* Tombol aksi kecil di tabel/admin (mis. "Edit", "Detail") */
+.tp-btn-soft {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 0.45rem 0.85rem;
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  color: #475569;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.15s ease;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.tp-btn-soft:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+}
+.tp-btn-soft:active {
+  transform: translateY(0);
+}
+/* Varian merah untuk aksi berbahaya, mis. tombol Hapus */
+.tp-btn-soft--danger {
+  color: #dc2626;
+  border-color: #fecaca;
+}
+.tp-btn-soft--danger:hover {
+  background: #fef2f2;
+  border-color: #fca5a5;
+  color: #b91c1c;
+}
+
+
+/* =============================================================
+   5. KARTU (CARD) DESTINASI & FASILITAS
+   ============================================================= */
+
+/* Efek angkat halus + shadow membesar saat kartu destinasi di-hover */
+.tp-card {
+  transition:
+    transform 0.35s,
+    box-shadow 0.35s,
+    border-color 0.35s ease;
+}
+.tp-card:hover {
+  transform: translateY(-6px); /* card naik 6px */
+  box-shadow: var(--tp-shadow-lg); /* bayangan membesar/menegas */
+}
+
+/* Bingkai gambar kartu: sembunyikan bagian gambar yang melebihi batas kartu
+   (efek zoom saat hover dihapus, dianggap animasi hiasan yang kurang penting) */
+.tp-zoom {
+  overflow: hidden;
+}
+
+/* Kartu fasilitas yang terkunci (misal sebelum tiket masuk dipilih):
+   dibuat pudar & abu-abu, hover dinonaktifkan */
+.tp-locked {
+  opacity: 0.5;
+  filter: grayscale(0.25);
+}
+.tp-locked.tp-card:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+
+/* =============================================================
+   6. STATISTIK (HERO STAT & DASHBOARD ADMIN)
+   ============================================================= */
+
+/* Kartu statistik kaca di hero (Destinasi, Ulasan, Rating) */
+.tp-stat {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 1rem;
+}
+
+/* Kartu statistik gradient berwarna di dashboard admin */
 .tp-stat-grad {
   position: relative;
   overflow: hidden;
@@ -222,32 +347,48 @@ p { text-wrap: pretty; }
   border: 1px solid rgba(255, 255, 255, 0.16);
   box-shadow: 0 18px 40px -22px rgba(15, 23, 42, 0.45);
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.22); /* jamin teks putih tetap kontras */
-  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-              box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  /* Efek angkat + shadow saat hover dihapus: kartu statistik ini hanya
+     menampilkan data (tidak diklik), jadi animasi hover dianggap tidak perlu */
 }
-.tp-stat-grad:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 26px 50px -22px rgba(15, 23, 42, 0.55);
-}
-/* Halo bercahaya di sudut */
+/* Halo bercahaya di sudut kanan-atas kartu */
 .tp-stat-grad::before {
-  content: "";
+  content: '';
   position: absolute;
-  width: 150px; height: 150px;
-  top: -55px; right: -45px;
+  width: 150px;
+  height: 150px;
+  top: -55px;
+  right: -45px;
   border-radius: 9999px;
   background: radial-gradient(circle, rgba(255, 255, 255, 0.38), transparent 70%);
   filter: blur(6px);
   pointer-events: none;
 }
-/* Setiap varian: warna solid + gradient lebih gelap → teks putih selalu terbaca */
-.tp-stat-grad--teal    { background-color:#0d9488; background-image: linear-gradient(135deg, #0f766e 0%, #0d9488 50%, #14b8a6 100%); }
-.tp-stat-grad--amber   { background-color:#d97706; background-image: linear-gradient(135deg, #b45309 0%, #d97706 50%, #f59e0b 100%); }
-.tp-stat-grad--emerald { background-color:#059669; background-image: linear-gradient(135deg, #047857 0%, #059669 50%, #10b981 100%); }
-.tp-stat-grad--rose    { background-color:#e11d48; background-image: linear-gradient(135deg, #9f1239 0%, #e11d48 50%, #f43f5e 100%); }
-.tp-stat-grad--violet  { background-color:#7c3aed; background-image: linear-gradient(135deg, #6d28d9 0%, #7c3aed 50%, #8b5cf6 100%); }
-.tp-stat-grad--sky     { background-color:#0284c7; background-image: linear-gradient(135deg, #0369a1 0%, #0284c7 50%, #0ea5e9 100%); }
-/* Wadah ikon semi-transparan di atas kartu gradient */
+/* Varian warna kartu statistik (teal/amber/emerald/rose/violet/sky) */
+.tp-stat-grad--teal {
+  background-color: #0d9488;
+  background-image: linear-gradient(135deg, #0f766e 0%, #0d9488 50%, #14b8a6 100%);
+}
+.tp-stat-grad--amber {
+  background-color: #d97706;
+  background-image: linear-gradient(135deg, #b45309 0%, #d97706 50%, #f59e0b 100%);
+}
+.tp-stat-grad--emerald {
+  background-color: #059669;
+  background-image: linear-gradient(135deg, #047857 0%, #059669 50%, #10b981 100%);
+}
+.tp-stat-grad--rose {
+  background-color: #e11d48;
+  background-image: linear-gradient(135deg, #9f1239 0%, #e11d48 50%, #f43f5e 100%);
+}
+.tp-stat-grad--violet {
+  background-color: #7c3aed;
+  background-image: linear-gradient(135deg, #6d28d9 0%, #7c3aed 50%, #8b5cf6 100%);
+}
+.tp-stat-grad--sky {
+  background-color: #0284c7;
+  background-image: linear-gradient(135deg, #0369a1 0%, #0284c7 50%, #0ea5e9 100%);
+}
+/* Wadah ikon semi-transparan di atas kartu statistik gradient */
 .tp-stat-grad .tp-stat-icon {
   background: rgba(255, 255, 255, 0.22);
   backdrop-filter: blur(6px);
@@ -255,75 +396,29 @@ p { text-wrap: pretty; }
   border: 1px solid rgba(255, 255, 255, 0.28);
 }
 
-/* ---------- Latar halaman bermerek (lembut, bermassa warna) ---------- */
-.tp-page-bg {
-  background-color: #f8fafc;
-  background-image:
-    radial-gradient(55% 45% at 100% 0%, rgba(20, 184, 166, 0.12) 0%, transparent 60%),
-    radial-gradient(50% 40% at 0% 0%, rgba(56, 189, 248, 0.12) 0%, transparent 60%),
-    linear-gradient(180deg, #f0fdfa 0%, #f8fafc 40%, #f8fafc 100%);
-  background-attachment: fixed;
-}
 
-/* ---------- Navbar gradient berwarna ---------- */
-.tp-navbar {
-  background-image: linear-gradient(110deg, #0f766e 0%, #0d9488 38%, #0891b2 74%, #06b6d4 100%);
-  color: #fff;
-}
-.tp-navbar.tp-nav--scrolled { box-shadow: 0 10px 30px -16px rgba(13, 148, 136, 0.55); }
-.tp-navbar .tp-nav-link { color: rgba(255, 255, 255, 0.92); border-radius: 0.5rem; }
-.tp-navbar .tp-nav-link:hover { background: rgba(255, 255, 255, 0.16); color: #fff; }
-.tp-navbar .tp-nav-link--active { background: rgba(255, 255, 255, 0.22); color: #fff; }
-/* Glass pill (avatar/user) di atas gradient */
-.tp-nav-glass {
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.32);
-  color: #fff;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-}
-/* Tombol outline terang di atas gradient */
-.tp-nav-outline {
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  color: #fff;
-}
-.tp-nav-outline:hover { background: rgba(255, 255, 255, 0.16); }
+/* =============================================================
+   7. ADMIN: HEADER SECTION & TABEL
+   ============================================================= */
 
-/* ---------- Panel menu mobile ---------- */
-.tp-mobile-menu {
-  background-image: linear-gradient(180deg, #0d9488 0%, #0f766e 100%);
-  color: #fff;
-}
-
-/* ---------- Header section berwarna (admin) ---------- */
+/* Header section berwarna lembut di halaman admin */
 .tp-section-head {
   background-image: linear-gradient(90deg, #ccfbf1 0%, #ecfeff 60%, #f8fafc 100%);
   border-bottom: 1px solid #99f6e4;
   padding: 1.25rem 1.5rem;
 }
-/* thead berwarna lembut */
-.tp-table.tp-table--tinted thead th { background-image: linear-gradient(180deg, #f0fdfa, #ecfeff); color: #0f766e; }
 
-/* ---------- Tabel admin: batas tinggi + thead sticky ---------- */
-.tp-table-scroll {
-  max-height: 520px;
-  overflow: auto;
-  border-radius: 1.5rem;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+/* Bungkus tabel dengan sudut membulat + overflow disembunyikan */
+.tp-table-wrap {
+  border-radius: 1rem;
+  overflow: hidden;
 }
-.tp-table-scroll thead th { position: sticky; top: 0; z-index: 1; box-shadow: inset 0 -1px 0 #e5e7eb; }
-.tp-table-scroll::-webkit-scrollbar { height: 10px; }
-.tp-table-scroll::-webkit-scrollbar-thumb { background: rgba(20, 184, 166, 0.28); border-radius: 9999px; }
-.tp-table-scroll::-webkit-scrollbar-track { background: transparent; }
 
-/* ---------- Kartu fasilitas terkunci (sebelum tiket masuk dipilih) ---------- */
-.tp-locked { opacity: .5; filter: grayscale(.25); }
-.tp-locked.tp-card:hover { transform: none; box-shadow: none; }
-
-/* ---------- Tabel premium ---------- */
-.tp-table-wrap { border-radius: 1rem; overflow: hidden; }
-.tp-table { width: 100%; border-collapse: collapse; }
+/* Tabel dasar/premium: header uppercase abu-abu, baris ada garis pemisah */
+.tp-table {
+  width: 100%;
+  border-collapse: collapse;
+}
 .tp-table thead th {
   text-align: left;
   font-size: 0.7rem;
@@ -335,14 +430,51 @@ p { text-wrap: pretty; }
   font-weight: 600;
   white-space: nowrap;
 }
-.tp-table tbody td { padding: 1rem 1.5rem; vertical-align: middle; }
+.tp-table tbody td {
+  padding: 1rem 1.5rem;
+  vertical-align: middle;
+}
 .tp-table tbody tr {
   border-top: 1px solid #f1f5f9;
   transition: background-color 0.2s ease;
 }
-.tp-table tbody tr:hover { background-color: #f8fafc; }
+.tp-table tbody tr:hover {
+  background-color: #f8fafc;
+}
 
-/* ---------- Chip / badge status (bentuk saja; warna fleksibel) ---------- */
+/* Variasi thead tabel dengan warna teal lembut (dipakai bersama .tp-table) */
+.tp-table.tp-table--tinted thead th {
+  background-image: linear-gradient(180deg, #f0fdfa, #ecfeff);
+  color: #0f766e;
+}
+
+/* Tabel dengan tinggi terbatas + header sticky saat discroll (dashboard admin) */
+.tp-table-scroll {
+  max-height: 520px;
+  overflow: auto;
+  border-radius: 1.5rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+}
+.tp-table-scroll thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  box-shadow: inset 0 -1px 0 #e5e7eb;
+}
+.tp-table-scroll::-webkit-scrollbar {
+  height: 10px;
+}
+.tp-table-scroll::-webkit-scrollbar-thumb {
+  background: rgba(20, 184, 166, 0.28);
+  border-radius: 9999px;
+}
+.tp-table-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Chip/badge status (mis. "Lunas", "Pending") — bentuk saja, warna
+   ditentukan lewat class tambahan di HTML */
 .tp-chip {
   display: inline-flex;
   align-items: center;
@@ -355,88 +487,116 @@ p { text-wrap: pretty; }
   white-space: nowrap;
 }
 
-/* ---------- Tombol aksi kecil (tabel/admin) ---------- */
-.tp-btn-soft {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.76rem;
-  font-weight: 600;
-  padding: 0.45rem 0.85rem;
-  border-radius: 0.75rem;
-  border: 1px solid #e5e7eb;
-  background: #fff;
-  color: #475569;
-  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
-  cursor: pointer;
-  white-space: nowrap;
-}
-.tp-btn-soft:hover { background: #f8fafc; border-color: #cbd5e1; transform: translateY(-1px); }
-.tp-btn-soft:active { transform: translateY(0); }
-/* Varian merah untuk aksi hapus */
-.tp-btn-soft--danger { color: #dc2626; border-color: #fecaca; }
-.tp-btn-soft--danger:hover { background: #fef2f2; border-color: #fca5a5; color: #b91c1c; }
 
-/* ---------- Header halaman sukses ---------- */
+/* =============================================================
+   8. HALAMAN SUKSES (setelah checkout/pembayaran berhasil)
+   ============================================================= */
+
+/* Header halaman sukses: gradient hijau-emerald-cyan */
 .tp-success {
   background-image:
-    radial-gradient(60% 90% at 82% 0%, rgba(56, 189, 248, 0.55) 0%, transparent 60%),
-    radial-gradient(50% 80% at 8% 100%, rgba(16, 185, 129, 0.55) 0%, transparent 55%),
-    linear-gradient(135deg, #047857 0%, #10b981 48%, #14b8a6 100%);
+    radial-gradient(60% 90% at 82% 0%, rgba(56, 189, 248, 0.55) 0%, transparent 60%), radial-gradient(50% 80% at 8% 100%, rgba(16, 185, 129, 0.55) 0%, transparent 55%), linear-gradient(135deg, #047857 0%, #10b981 48%, #14b8a6 100%);
   position: relative;
   overflow: hidden;
 }
 .tp-success::after {
-  content: "";
-  position: absolute; inset: 0;
+  content: '';
+  position: absolute;
+  inset: 0;
   pointer-events: none;
-  background: radial-gradient(120% 80% at 50% -10%, rgba(255, 255, 255, 0.20), transparent 45%);
-}
-/* Cincin ping yang membesar di sekitar ikon centang */
-.tp-success-ring { position: relative; display: inline-flex; align-items: center; justify-content: center; }
-.tp-success-ring::before {
-  content: "";
-  position: absolute; inset: -12px;
-  border-radius: 9999px;
-  border: 2px solid rgba(255, 255, 255, 0.55);
-  animation: tp-ping 1.9s cubic-bezier(0, 0, 0.2, 1) infinite;
-}
-.tp-success-pop { animation: tp-pop 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
-@keyframes tp-ping {
-  0%        { transform: scale(1); opacity: 0.75; }
-  80%, 100% { transform: scale(1.55); opacity: 0; }
-}
-@keyframes tp-pop {
-  0%   { transform: scale(0.6); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
+  background: radial-gradient(120% 80% at 50% -10%, rgba(255, 255, 255, 0.2), transparent 45%);
 }
 
-/* ---------- Receipt / efek kupon ---------- */
-.tp-ticket { position: relative; border: 1px solid #e5e7eb; border-radius: 1rem; background: #fff; }
-.tp-ticket-tear { position: relative; }
-.tp-ticket-tear::before {
-  content: "";
+/* Cincin statis di sekitar ikon centang sukses (animasi "ping" yang
+   membesar-mengecil dihapus, dianggap animasi hiasan yang kurang penting) */
+.tp-success-ring {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.tp-success-ring::before {
+  content: '';
   position: absolute;
-  left: 1rem; right: 1rem;
+  inset: -12px;
+  border-radius: 9999px;
+  border: 2px solid rgba(255, 255, 255, 0.55);
+}
+
+/* Catatan: animasi "pop" (.tp-success-pop) saat ikon sukses muncul juga
+   dihapus karena sifatnya hanya hiasan */
+
+
+/* =============================================================
+   9. TIKET / STRUK (efek kupon sobek)
+   ============================================================= */
+
+/* Kartu tiket/struk dasar */
+.tp-ticket {
+  position: relative;
+  border: 1px solid #e5e7eb;
+  border-radius: 1rem;
+  background: #fff;
+}
+
+/* Garis putus-putus (sobekan) horizontal di tengah tiket */
+.tp-ticket-tear {
+  position: relative;
+}
+.tp-ticket-tear::before {
+  content: '';
+  position: absolute;
+  left: 1rem;
+  right: 1rem;
   height: 0;
   border-top: 2px dashed #cbd5e1;
 }
-/* Takik lingkaran di kiri-kanan garis sobek (warna = bg halaman) */
+
+/* Takik lingkaran di kiri-kanan garis sobek; warna sama dengan bg halaman
+   supaya terlihat seperti "lubang" pada tiket */
 .tp-ticket-notch {
   position: absolute;
-  width: 18px; height: 18px;
+  width: 18px;
+  height: 18px;
   background: #f9fafb;
   border-radius: 9999px;
   top: -9px;
 }
-.tp-ticket-notch--left { left: -9px; }
-.tp-ticket-notch--right { right: -9px; }
+.tp-ticket-notch--left {
+  left: -9px;
+}
+.tp-ticket-notch--right {
+  right: -9px;
+}
 
-/* ---------- Aksesibilitas: hormati reduced motion ---------- */
+
+/* =============================================================
+   10. AKSESIBILITAS: prefers-reduced-motion
+   ============================================================= */
+
+/* Matikan semua animasi/transisi untuk pengguna yang mengaktifkan
+   pengaturan "reduce motion" di OS/browser mereka */
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
-  .tp-card, .tp-zoom img, .tp-btn, .tp-btn::before, .tp-float, .tp-success-ring::before, .tp-success-pop, .tp-stat-grad { transition: none !important; animation: none !important; }
-  .tp-btn::before { display: none; }
-  .tp-slide { animation: none !important; transform: none !important; transition: none !important; }
+  html {
+    scroll-behavior: auto;
+  }
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .tp-card,
+  .tp-btn,
+  .tp-btn::before {
+    transition: none !important;
+    animation: none !important;
+  }
+  .tp-btn::before {
+    display: none;
+  }
+  .tp-slide {
+    animation: none !important;
+    transform: none !important;
+    transition: none !important;
+  }
 }
