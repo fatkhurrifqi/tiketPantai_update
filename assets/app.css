@@ -111,12 +111,14 @@ html {
    3. HERO SECTION (banner atas + slideshow foto pantai)
    ============================================================= */
 
-/* Kerangka hero (gradient background dimatikan, hanya position:relative
-   yang aktif karena dibutuhkan elemen slideshow di dalamnya) */
+/* Kerangka hero: gradient teal→cyan. Class ini DIPAKAI untuk panel branding
+   di halaman login & register (tp-hero di situ tidak punya slideshow, jadi
+   butuh background sendiri supaya teks putih terlihat). Di index.php hero
+   TIDAK memakai class ini (di sana backgroundnya dari slideshow .tp-slide). */
 .tp-hero {
-  /* background-color: #161a19; */
-  /* background-image:
-    radial-gradient(60% 80% at 85% 10%, rgba(182, 15, 43, 0.55) 0%, transparent 60%), radial-gradient(50% 70% at 10% 90%, rgba(20, 184, 166, 0.55) 0%, transparent 55%), linear-gradient(135deg, #0f766e 0%, #14b8a6 45%, #06b6d4 100%); */
+  background-color: #0f766e; /* fallback bila gradient gagal dimuat */
+  background-image:
+    radial-gradient(60% 80% at 85% 10%, rgba(6, 182, 212, 0.55) 0%, transparent 60%), radial-gradient(50% 70% at 10% 90%, rgba(20, 184, 166, 0.55) 0%, transparent 55%), linear-gradient(135deg, #0f766e 0%, #14b8a6 45%, #06b6d4 100%);
   position: relative;
 }
 
