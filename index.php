@@ -26,6 +26,28 @@ foreach ($destinations as &$dest) {
     $dest['ticket_types'] = $ttStmt->fetchAll();
 }
 unset($dest); // Wajib di-unset setelah foreach by-reference, untuk mencegah bug data ke-overwrite di loop lain
+
+// ===== Hitung statistik ulasan & rating GLOBAL (dinamis dari data asli) =====
+// Sebelumnya angka "1.9K+" ulasan & "4.6" rating di Hero di-hardcode (tidak
+// berubah walau data berubah) -> menyesatkan. Sekarang dihitung dari kolom
+// `rating` & `reviews` tiap destinasi: rating dipakai sebagai rata-rata
+// TERBOBOT oleh jumlah ulasan agar adil antar destinasi.
+$totalReviews = 0;
+$ratingSum = 0;     // akumulator (rating * reviews) untuk rata-rata terbobot
+foreach ($destinations as $d) {
+    $rv = (int) ($d['reviews'] ?? 0);
+    if ($rv > 0) {
+        $totalReviews += $rv;
+        $ratingSum += ((float) $d['rating']) * $rv;
+    }
+}
+// Rata-rata rating terbobot, dibulatkan 1 desimal; 0 bila belum ada ulasan
+$avgRating = $totalReviews > 0 ? round($ratingSum / $totalReviews, 1) : 0;
+
+// Format angka ulasan: >=1000 -> "1.9K+" supaya ringkas, selain itu "n+"
+$reviewsLabel = $totalReviews >= 1000
+    ? rtrim(rtrim(number_format($totalReviews / 1000, 1), '0'), '.') . 'K+'
+    : $totalReviews . '+';
 ?>
 <!doctype html>
 <html lang="id">
@@ -53,7 +75,7 @@ unset($dest); // Wajib di-unset setelah foreach by-reference, untuk mencegah bug
     href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
     rel="stylesheet">
 
-  <link rel="stylesheet" href="assets/app.css?v=5">
+  <link rel="stylesheet" href="assets/app.css?v=7">
   <style>
   body {
     font-family: 'Inter', sans-serif;
@@ -199,10 +221,20 @@ unset($dest); // Wajib di-unset setelah foreach by-reference, untuk mencegah bug
         Jika nanti sudah ada tabel ulasan/rating di database, tinggal tambahkan lagi
         dengan query SUM/AVG yang sebenarnya.
       -->
-      <div class="grid grid-cols-1 gap-3 sm:gap-5 mt-14 max-w-xs reveal is-visible" style="--reveal-delay:120ms">
-        <div class="tp-stat px-3 py-4 sm:px-5 sm:py-5 text-center">
+      <div class="grid grid-cols-3 gap-2 sm:gap-5 mt-14 max-w-md reveal is-visible" style="--reveal-delay:120ms">
+        <div class="tp-stat px-2 py-4 sm:px-5 sm:py-5 text-center">
           <div class="font-display text-2xl sm:text-4xl font-extrabold"><?= count($destinations) ?>+</div>
           <div class="text-white/75 text-[11px] sm:text-sm mt-0.5">Destinasi</div>
+        </div>
+        <div class="tp-stat px-2 py-4 sm:px-5 sm:py-5 text-center">
+          <div class="font-display text-2xl sm:text-4xl font-extrabold flex items-center justify-center gap-1 sm:gap-1.5">
+            <i class="fa-solid fa-star text-amber-300 text-base sm:text-2xl"></i><?= $avgRating ?: '—' ?>
+          </div>
+          <div class="text-white/75 text-[11px] sm:text-sm mt-0.5">Rating</div>
+        </div>
+        <div class="tp-stat px-2 py-4 sm:px-5 sm:py-5 text-center">
+          <div class="font-display text-2xl sm:text-4xl font-extrabold"><?= $reviewsLabel ?></div>
+          <div class="text-white/75 text-[11px] sm:text-sm mt-0.5">Ulasan</div>
         </div>
       </div>
 
