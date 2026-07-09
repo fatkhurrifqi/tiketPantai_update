@@ -1,21 +1,21 @@
-<?php
-// =============================================
-// Handler CRUD Destinasi (admin only)
-// Aksi via field 'action': create | update | delete | toggle_active
-// Upload gambar ke uploads/destinations/
-// =============================================
-session_start();
-$pdo = require __DIR__ . '/../db.php';
-$user = $_SESSION['user'] ?? null;
+    <?php
+    // =============================================
+    // Handler CRUD Destinasi (admin only)
+    // Aksi via field 'action': create | update | delete | toggle_active
+    // Upload gambar ke uploads/destinations/
+    // =============================================
+    session_start();
+    $pdo = require __DIR__ . '/../db.php';
+    $user = $_SESSION['user'] ?? null;
 
-if (!$user || $user['role'] !== 'admin') {
-    header('Location: ../auth/login.php');
-    exit;
-}
+    if (!$user || $user['role'] !== 'admin') {
+        header('Location: ../auth/login.php');
+        exit;
+    }
 
-$baseUrl = 'index.php';
+    $baseUrl = 'index.php';
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: ' . $baseUrl);
     exit;
 }

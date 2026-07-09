@@ -115,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_order'])) {
   <link
     href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="../assets/app.css?v=5">
+  <link rel="stylesheet" href="../assets/app.css">
   <style>
   body {
     font-family: 'Inter', sans-serif;
@@ -175,7 +175,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_order'])) {
           <span class="inline-flex items-center gap-1.5 text-teal-600 text-xs font-bold tracking-wider mb-2"><i
               class="fa-solid fa-shield-halved"></i> PANEL ADMIN</span>
           <h1 class="font-display text-2xl sm:text-3xl font-extrabold text-gray-900">Dashboard</h1>
-          <p class="text-sm text-gray-500 mt-1">Kelola destinasi, pesanan, dan pengguna</p>
+          <p class="text-sm text-gray-500 mt-1">Kelola destinasi, pesanan, dan   pengguna</p>
         </div>
       </div>
 
@@ -207,7 +207,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_order'])) {
           <div class="relative font-display text-2xl sm:text-3xl font-extrabold"><?= $totalUsers ?></div>
           <div class="relative text-[11px] text-white/80 mt-0.5">Pengguna terdaftar</div>
         </div>
-        <div class="reveal tp-stat-grad tp-stat-grad--amber p-5" style="--reveal-delay:80ms">
+        <div class="reveal tp-stat-grad tp-stat-grad--e p-5" style="--reveal-delay:80ms">
           <div class="relative flex items-center justify-between mb-3">
             <span class="text-[11px] font-semibold text-white/85 uppercase tracking-wide">Total Pesanan</span>
             <div class="tp-stat-icon w-10 h-10 rounded-xl flex items-center justify-center"><i
