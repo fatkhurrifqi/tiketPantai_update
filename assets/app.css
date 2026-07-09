@@ -372,11 +372,17 @@ html {
 .tp-stat-grad--amber {
   background-image: linear-gradient(135deg, #b45309 0%, #d97706 50%, #f59e0b 100%);
 }
+
 .tp-stat-grad--emerald {
   background-image: linear-gradient(135deg, #000000 0%, #24f1b0 50%, #9410b9 100%);
 }
 .tp-stat-grad--rose {
+<<<<<<< HEAD
   background-image: linear-gradient(135deg, #f4b907 0%, #10333c 50%, #6249c5 100%);
+=======
+  background-color: #e11d1d;
+  background-image: linear-gradient(135deg, #699f12 0%, #5be11d 50%, #3ff454 100%);
+>>>>>>> 297a07629755d7f1b04560acd9da2f0bde83694c
 }
 .tp-stat-grad--violet {
   background-image: linear-gradient(135deg, #ed5b07 0%, #7c3aed 50%, #8b5cf6 100%);

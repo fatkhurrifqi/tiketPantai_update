@@ -9,7 +9,7 @@ $pdo = require __DIR__ . '/db.php';
 
 // Judul halaman, dipakai di tag <title>
 $title = 'Home';
-
+  
 // Ambil data user yang sedang login (jika ada). Jika belum login, nilainya null.
 $user = $_SESSION['user'] ?? null;
 
@@ -75,7 +75,7 @@ $reviewsLabel = $totalReviews >= 1000
     href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
     rel="stylesheet">
 
-  <link rel="stylesheet" href="assets/app.css?v=6">
+  <link rel="stylesheet" href="assets/app.css?v=7">
   <style>
   body {
     font-family: 'Inter', sans-serif;
