@@ -157,6 +157,13 @@ try {
         }
         $stmt = $pdo->prepare('INSERT INTO destinations (name, slug, image, location, rating, open_hours, price, description, category, is_popular, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
         $stmt->execute([$name, $slug, $imagePath, $location, $rating, $openHours, $price, $description, $category, $isPopular, $isActive]);
+        $newDestId = (int)$pdo->lastInsertId();
+
+        // Otomatis buat 1 tiket "Tiket Masuk Pantai" (wajib, letaknya selalu paling atas).
+        // Harga = harga destinasi; akan terdeteksi sebagai entry ticket di checkout.
+        $pdo->prepare('INSERT INTO ticket_types (name, price, unit, description, destination_id) VALUES (?, ?, ?, ?, ?)')
+            ->execute(['Tiket Masuk Pantai', $price, '/orang', null, $newDestId]);
+
         header('Location: ' . $baseUrl . '?msg=dest_created');
         exit;
     }
@@ -167,11 +174,12 @@ try {
             exit;
         }
         if ($imagePath !== null) {
-            $stmt = $pdo->prepare('UPDATE destinations SET name=?, image=?, location=?, rating=?, open_hours=?, price=?, description=?, category=?, is_popular=?, is_active=? WHERE id=?');
-            $stmt->execute([$name, $imagePath, $location, $rating, $openHours, $price, $description, $category, $isPopular, $isActive, $id]);
+            // Rating tidak diubah di sini (dikelola otomatis dari ulasan pengunjung).
+            $stmt = $pdo->prepare('UPDATE destinations SET name=?, image=?, location=?, open_hours=?, price=?, description=?, category=?, is_popular=?, is_active=? WHERE id=?');
+            $stmt->execute([$name, $imagePath, $location, $openHours, $price, $description, $category, $isPopular, $isActive, $id]);
         } else {
-            $stmt = $pdo->prepare('UPDATE destinations SET name=?, location=?, rating=?, open_hours=?, price=?, description=?, category=?, is_popular=?, is_active=? WHERE id=?');
-            $stmt->execute([$name, $location, $rating, $openHours, $price, $description, $category, $isPopular, $isActive, $id]);
+            $stmt = $pdo->prepare('UPDATE destinations SET name=?, location=?, open_hours=?, price=?, description=?, category=?, is_popular=?, is_active=? WHERE id=?');
+            $stmt->execute([$name, $location, $openHours, $price, $description, $category, $isPopular, $isActive, $id]);
         }
         header('Location: ' . $baseUrl . '?msg=dest_updated');
         exit;

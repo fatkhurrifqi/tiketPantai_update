@@ -117,16 +117,39 @@
     });
   }
 
+  /* ---- 4) Toggle lihat/sembunyikan password ----
+     Saat tombol mata pada field password diklik, tipe input berubah dari
+     'password' ke 'text' (dan sebaliknya) dan ikon mata ikut berganti antara
+     fa-eye / fa-eye-slash. Dipakai di halaman login & register. Setiap tombol
+     menunjuk field-nya lewat atribut data-toggle-password="<id input>". */
+  function initPasswordToggle() {
+    var btns = document.querySelectorAll('[data-toggle-password]');
+    if (!btns.length) return;
+    btns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var input = document.getElementById(btn.getAttribute('data-toggle-password'));
+        if (!input) return;
+        var show = input.type === 'password';
+        input.type = show ? 'text' : 'password';
+        var icon = btn.querySelector('i');
+        if (icon) icon.className = show ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+        btn.setAttribute('aria-label', show ? 'Sembunyikan password' : 'Tampilkan password');
+      });
+    });
+  }
+
   // Jalankan semua fitur setelah DOM siap (atau langsung jika sudah siap)
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () {
       initNav();
       initSlideshow();
       initMobileNav();
+      initPasswordToggle();
     });
   } else {
     initNav();
     initSlideshow();
     initMobileNav();
+    initPasswordToggle();
   }
 })();

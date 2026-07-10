@@ -40,7 +40,12 @@ foreach ($qty as $ttId => $quantity) {
     $tt = $stmt->fetch();
     
     if (!$tt) continue;
-    
+
+    // Pengaman server-side: jangan melebihi maksimal pesanan (jika diset admin).
+    if (!empty($tt['max_qty']) && $quantity > (int)$tt['max_qty']) {
+        $quantity = (int)$tt['max_qty'];
+    }
+
     $subtotal = $tt['price'] * $quantity;
     $totalAmount += $subtotal;
     $validatedItems[] = ['ticket_type_id' => $ttId, 'quantity' => $quantity, 'subtotal' => $subtotal, 'name' => $tt['name']];

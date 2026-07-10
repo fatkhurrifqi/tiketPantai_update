@@ -21,7 +21,7 @@ $destinations = $stmt->fetchAll();
 // ===== Ambil jenis tiket untuk setiap destinasi =====
 // &$dest artinya kita mengubah langsung isi array $destinations (reference)
 foreach ($destinations as &$dest) {
-    $ttStmt = $pdo->prepare('SELECT * FROM ticket_types WHERE destination_id = ? ORDER BY price ASC');
+    $ttStmt = $pdo->prepare('SELECT * FROM ticket_types WHERE destination_id = ? ORDER BY (name LIKE \'%masuk%\') DESC, id ASC');
     $ttStmt->execute([$dest['id']]);
     $dest['ticket_types'] = $ttStmt->fetchAll();
 }
@@ -375,9 +375,12 @@ $reviewsLabel = $totalReviews >= 1000
           <div class="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mb-5"><i
               class="fa-solid <?= $st[2] ?> text-xl"></i></div>
           <h3 class="text-lg font-bold mb-2"><?= htmlspecialchars($fd['name']) ?></h3>
-          <div class="w-full text-left text-sm text-white/90 leading-relaxed max-h-36 overflow-y-auto pr-2 -mr-2">
-            <?= nl2br(htmlspecialchars($fd['description'] ?: 'Destinasi wisata pilihan di Paranggupito, Wonogiri.')) ?>
-          </div>
+          <?php
+          // Batasi deskripsi maksimal 120 karakter (tanpa scroll).
+          $featDesc = trim(preg_replace('/\s+/', ' ', $fd['description'] ?: 'Destinasi wisata pilihan di Paranggupito, Wonogiri.'));
+          $featDesc = mb_strlen($featDesc) > 120 ? mb_substr($featDesc, 0, 120) . '…' : $featDesc;
+          ?>
+          <p class="w-full text-left text-sm text-white/90 leading-relaxed"><?= htmlspecialchars($featDesc) ?></p>
         </div>
         <?php endforeach; endif; ?>
       </div>

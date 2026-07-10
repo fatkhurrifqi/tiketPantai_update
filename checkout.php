@@ -18,7 +18,8 @@ if (!$dest) {
 }
 
 // Fetch ticket types
-$ttStmt = $pdo->prepare('SELECT * FROM ticket_types WHERE destination_id = ? ORDER BY price ASC');
+// Tiket masuk selalu tampil paling atas, sisanya urut id.
+$ttStmt = $pdo->prepare('SELECT * FROM ticket_types WHERE destination_id = ? ORDER BY (name LIKE \'%masuk%\') DESC, id ASC');
 $ttStmt->execute([$dest['id']]);
 $ticketTypes = $ttStmt->fetchAll();
 
@@ -114,6 +115,9 @@ foreach ($ticketTypes as $tt) {
                 <i class="fa-solid fa-circle-info"></i> Pilih <strong>tiket masuk</strong> terlebih dahulu sebelum memesan fasilitas lain (tikar, kursi, dll).
               </div>
               <?php endif; ?>
+              <div id="maxHint" class="hidden mb-3 bg-red-50 border border-red-200 text-red-700 text-xs font-medium px-3 py-2 rounded-lg flex items-center gap-2">
+                <i class="fa-solid fa-triangle-exclamation"></i> <span id="maxHintText"></span>
+              </div>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <?php foreach ($ticketTypes as $tt): ?>
                 <?php $isEntry = $entryTicketId === (int)$tt['id']; ?>
@@ -125,6 +129,9 @@ foreach ($ticketTypes as $tt) {
                     <h3 class="font-bold text-gray-900 text-sm"><?= htmlspecialchars($tt['name']) ?></h3>
                     <div class="text-teal-600 font-bold text-xl mt-2">Rp <?= number_format($tt['price'], 0, ',', '.') ?></div>
                     <div class="text-[11px] text-gray-400 mt-0.5"><?= htmlspecialchars($tt['unit']) ?></div>
+                    <?php if (!empty($tt['max_qty'])): ?>
+                    <div class="text-[10px] text-amber-600 mt-1"><i class="fa-solid fa-circle-info"></i> Maks. <?= (int)$tt['max_qty'] ?> pesanan</div>
+                    <?php endif; ?>
                     <?php if ($tt['description']): ?>
                     <div class="text-[11px] text-gray-400 mt-1"><?= htmlspecialchars($tt['description']) ?></div>
                     <?php endif; ?>
@@ -238,7 +245,7 @@ foreach ($ticketTypes as $tt) {
   <script>
     let dataTiket = {};
     <?php foreach ($ticketTypes as $tt): ?>
-    dataTiket[<?= $tt['id'] ?>] = { qty: 0, price: <?= $tt['price'] ?>, name: '<?= addslashes($tt['name']) ?>' };
+    dataTiket[<?= $tt['id'] ?>] = { qty: 0, price: <?= $tt['price'] ?>, name: '<?= addslashes($tt['name']) ?>', max: <?= (int)($tt['max_qty'] ?? 0) ?> };
     <?php endforeach; ?>
 
     let metodeTerpilih = null;   // key kelompok: bank | ewallet | qris | location
@@ -317,12 +324,30 @@ foreach ($ticketTypes as $tt) {
         flashEntryHint();
         return;
       }
-      dataTiket[id].qty += aksi;
-      if (dataTiket[id].qty < 0) dataTiket[id].qty = 0;
-      document.getElementById('qty-' + id).innerText = dataTiket[id].qty;
-      document.getElementById('input-' + id).value = dataTiket[id].qty;
+      let next = dataTiket[id].qty + aksi;
+      if (next < 0) next = 0;
+      const mx = dataTiket[id].max || 0;
+      // Batasi sesuai maksimal yang ditentukan admin
+      if (mx > 0 && next > mx) {
+        flashMaxHint(mx, dataTiket[id].name);
+        return; // sudah mencapai batas maksimal
+      }
+      dataTiket[id].qty = next;
+      document.getElementById('qty-' + id).innerText = next;
+      document.getElementById('input-' + id).value = next;
       refreshEntryLock();
       updateSummary();
+    }
+
+    let maxHintTimer = null;
+    function flashMaxHint(maks, nama) {
+      const el = document.getElementById('maxHint');
+      if (!el) return;
+      document.getElementById('maxHintText').textContent =
+        'Maksimal ' + maks + ' pesanan untuk "' + nama + '".';
+      el.classList.remove('hidden');
+      clearTimeout(maxHintTimer);
+      maxHintTimer = setTimeout(function () { el.classList.add('hidden'); }, 2800);
     }
 
     function updateSummary() {

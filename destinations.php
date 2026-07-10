@@ -22,7 +22,7 @@ $destinations = $stmt->fetchAll();
 
 // Get ticket types for each destination
 foreach ($destinations as &$dest) {
-    $ttStmt = $pdo->prepare('SELECT * FROM ticket_types WHERE destination_id = ? ORDER BY price ASC');
+    $ttStmt = $pdo->prepare('SELECT * FROM ticket_types WHERE destination_id = ? ORDER BY (name LIKE \'%masuk%\') DESC, id ASC');
     $ttStmt->execute([$dest['id']]);
     $dest['ticketTypes'] = $ttStmt->fetchAll();
     
