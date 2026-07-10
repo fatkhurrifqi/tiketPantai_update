@@ -24,7 +24,7 @@ html {
 .tp-page-bg {
   background-color: #f8fafc;
   background-image:
-    radial-gradient(55% 45% at 100% 0%, rgba(20, 184, 166, 0.12) 0%, transparent 60%), radial-gradient(50% 40% at 0% 0%, rgba(56, 189, 248, 0.12) 0%, transparent 60%), linear-gradient(180deg, #f0fdfa 0%, #f8fafc 40%, #f8fafc 100%);
+    radial-gradient(55% 45% at 100% 0%, rgba(20, 184, 166, 0.12) 0%, transparent 60%), radial-gradient(50% 40% at 0% 0%, rgba(149, 149, 149, 0.12) 0%, transparent 60%), linear-gradient(180deg, #f0fdfa 0%, #f8fafc 40%, #f8fafc 100%);
   background-attachment: fixed;
 }
 
@@ -56,13 +56,13 @@ html {
 }
 .tp-nav.tp-nav--scrolled {
   box-shadow: 0 8px 30px -16px rgba(15, 23, 42, 0.35);
-  background-color: rgba(255, 255, 255, 0.92);
+  background-color: rgba(188, 167, 202, 0.92);
 }
 
-/* Navbar utama: gradient teal → cyan, teks putih */
+/* Navbar utama: gradient teal → cyan, teks putih di halaman register, login */
 .tp-navbar {
   background-image: linear-gradient(110deg, #0f766e 0%, #0d9488 38%, #0891b2 74%, #06b6d4 100%);
-  color: #fff;
+  color: #ffffff;
 }
 .tp-navbar.tp-nav--scrolled {
   box-shadow: 0 10px 30px -16px rgba(13, 148, 136, 0.55);
@@ -84,8 +84,8 @@ html {
 
 /* Pill kaca (glassmorphism) untuk avatar/nama user yang sedang login */
 .tp-nav-glass {
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.32);
+  background: rgba(160, 82, 175, 0.2);
+  border: 1px solid rgba(173, 76, 195, 0.32);
   color: #fff;
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
@@ -122,14 +122,15 @@ html {
   position: relative;
 }
 
-/* Kilau lembut di atas hero (dimatikan) */
+Kilau lembut di atas hero (dimatikan) */
 /* .tp-hero::after {
   content: '';
   position: absolute;
   inset: 0;
   pointer-events: none;
   background: radial-gradient(120% 90% at 50% -10%, rgba(255, 255, 255, 0.18), transparent 45%); */
-/* } */
+/*
+ }
 
 /* Blob dekoratif melayang, opsional (dimatikan) */
 /* .tp-hero-blob {
@@ -406,8 +407,8 @@ html {
 
 /* Header section berwarna lembut di halaman admin */
 .tp-section-head {
-  background-image: linear-gradient(90deg, #ccfbf1 0%, #ecfeff 60%, #f8fafc 100%);
-  border-bottom: 1px solid #99f6e4;
+  background-image: linear-gradient(90deg, #9deded 0%, #a1f1f5 60%, #ecf0f0 100%);
+  border-bottom: 1px solid #3a818e;
   padding: 1.25rem 1.5rem;
 }
 

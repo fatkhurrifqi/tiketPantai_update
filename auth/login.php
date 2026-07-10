@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
       <!-- Form -->
       <div class="p-8 sm:p-10">
-        <h2 class="font-display text-2xl font-extrabold text-gray-900 mb-1">Selamat Datang 👋</h2>
+        <h2 class="font-display text-2xl font-extrabold text-gray-900 mb-1">Selamat Datang</h2>
         <p class="text-sm text-gray-500 mb-6">Masuk untuk mengelola pesanan Anda.</p>
 
         <?php if ($errors): ?>
