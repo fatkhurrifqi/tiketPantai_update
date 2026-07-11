@@ -376,9 +376,9 @@ $reviewsLabel = $totalReviews >= 1000
               class="fa-solid <?= $st[2] ?> text-xl"></i></div>
           <h3 class="text-lg font-bold mb-2"><?= htmlspecialchars($fd['name']) ?></h3>
           <?php
-          // Batasi deskripsi maksimal 120 karakter (tanpa scroll).
+          // Batasi deskripsi maksimal 250 karakter (tanpa scroll).
           $featDesc = trim(preg_replace('/\s+/', ' ', $fd['description'] ?: 'Destinasi wisata pilihan di Paranggupito, Wonogiri.'));
-          $featDesc = mb_strlen($featDesc) > 120 ? mb_substr($featDesc, 0, 120) . '…' : $featDesc;
+          $featDesc = mb_strlen($featDesc) > 250 ? mb_substr($featDesc, 0, 250) . '…' : $featDesc;
           ?>
           <p class="w-full text-left text-sm text-white/90 leading-relaxed"><?= htmlspecialchars($featDesc) ?></p>
         </div>

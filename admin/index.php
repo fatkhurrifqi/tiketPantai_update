@@ -537,10 +537,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_order'])) {
           </div>
           <div class="sm:col-span-2">
             <label class="block text-xs text-gray-500 mb-1 font-medium">Deskripsi</label>
-            <textarea name="description" id="destDesc" rows="3" maxlength="200"
+            <textarea name="description" id="destDesc" rows="3" maxlength="250"
               class="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
               oninput="updateDescCounter()"></textarea>
-            <p class="text-[10px] text-gray-400 mt-1 text-right"><span id="descCount">0</span>/200 karakter</p>
+            <p class="text-[10px] text-gray-400 mt-1 text-right"><span id="descCount">0</span>/250 karakter</p>
           </div>
         </div>
         <div class="flex justify-end gap-2 pt-2 border-t border-gray-100">
@@ -626,7 +626,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_order'])) {
     return form.elements.namedItem(name);
   }
 
-  // Counter karakter deskripsi (maks 200)
+  // Counter karakter deskripsi (maks 250)
   function updateDescCounter() {
     const ta = document.getElementById('destDesc');
     if (ta) document.getElementById('descCount').textContent = ta.value.length;
