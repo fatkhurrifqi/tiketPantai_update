@@ -28,18 +28,17 @@ function get_payments(): array
 
         // Rekening bank (Transfer Bank). 'number' = nomor rekening, 'holder' = nama pemilik.
         'bank' => [
-            ['key' => 'bca',     'name' => 'Bank BCA',     'number' => '1234567890', 'holder' => 'TiketPantai'],
-            ['key' => 'mandiri', 'name' => 'Bank Mandiri', 'number' => '1357902468', 'holder' => 'TiketPantai'],
-            ['key' => 'bni',     'name' => 'Bank BNI',     'number' => '9876543210', 'holder' => 'TiketPantai'],
-            ['key' => 'bri',     'name' => 'Bank BRI',     'number' => '2468135790', 'holder' => 'TiketPantai'],
+            ['key' => 'bca',     'name' => 'Bank BCA',     'number' => '7835456331', 'holder' => 'Ahmad Fatkhur Rifqi'],
+            ['key' => 'seabank',     'name' => 'SeaBank',     'number' => '901445595617', 'holder' => 'Ahmad Fatkhur Rifqi'],
+            ['key' => 'bri',     'name' => 'Bank BRI',     'number' => '129701006306538', 'holder' => ''],
         ],
 
         // E-Wallet. 'number' = nomor telepon terdaftar e-wallet.
         'ewallet' => [
-            ['key' => 'gopay',     'name' => 'GoPay',     'number' => '081234567890', 'holder' => 'Budi Santoso'],
-            ['key' => 'dana',      'name' => 'DANA',      'number' => '081234567890', 'holder' => 'Budi Santoso'],
-            ['key' => 'shopeepay', 'name' => 'ShopeePay', 'number' => '081234567890', 'holder' => 'Budi Santoso'],
-            ['key' => 'ovo',       'name' => 'OVO',       'number' => '081234567890', 'holder' => 'Budi Santoso'],
+            ['key' => 'gopay',     'name' => 'GoPay',     'number' => '081294761810', 'holder' => 'Riana Nur Safitri'],
+            ['key' => 'dana',      'name' => 'DANA',      'number' => '081294761810', 'holder' => 'Riana Nur Safitri'],
+            ['key' => 'shopeepay', 'name' => 'ShopeePay', 'number' => '081294761810', 'holder' => 'Riana Nur Safitri'],
+            ['key' => 'ovo',       'name' => 'OVO',       'number' => '081294761810', 'holder' => 'Riana Nur Safitri'],
         ],
 
         // QRIS. Ganti 'image' dengan file QRIS asli (mis. 'assets/qris.png') bila sudah ada.

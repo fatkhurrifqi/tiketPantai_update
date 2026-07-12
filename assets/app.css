@@ -43,7 +43,6 @@ html {
   transform: none;
 } */
 
-
 /* =============================================================
    2. NAVBAR
    ============================================================= */
@@ -105,7 +104,6 @@ html {
   background-image: linear-gradient(180deg, #0d9488 0%, #0f766e 100%);
   color: #fff;
 }
-
 
 /* =============================================================
    3. HERO SECTION (banner atas + slideshow foto pantai)
@@ -199,16 +197,15 @@ Kilau lembut di atas hero (dimatikan) */
   background: #ffffff;
 }
 
-
 /* =============================================================
    4. TOMBOL (BUTTON) & BADGE
    ============================================================= */
 
 /* Efek kilau + tekan pada tombol umum (dimatikan) */
 /* .tp-btn { */
-  /* position: relative; */
-  /* overflow: hidden; */
-  /* transition:
+/* position: relative; */
+/* overflow: hidden; */
+/* transition:
     transform 0.2s ease,
     box-shadow 0.3s ease,
     background-color 0.3s ease; */
@@ -292,7 +289,6 @@ Kilau lembut di atas hero (dimatikan) */
   color: #b91c1c;
 }
 
-
 /* =============================================================
    5. KARTU (CARD) DESTINASI & FASILITAS
    ============================================================= */
@@ -325,7 +321,6 @@ Kilau lembut di atas hero (dimatikan) */
   transform: none;
   box-shadow: none;
 }
-
 
 /* =============================================================
    6. STATISTIK (HERO STAT & DASHBOARD ADMIN)
@@ -368,38 +363,33 @@ Kilau lembut di atas hero (dimatikan) */
 }
 /* Varian warna kartu statistik (teal/amber/emerald/rose/violet/sky) */
 .tp-stat-grad--teal {
-  background-color: #0d9488;
-  background-image: linear-gradient(135deg, #0f766e 0%, #0d9488 50%, #14b8a6 100%);
+  background-image: linear-gradient(135deg, #0f7618 0%, #0d9418 50%, #215f40 100%);
 }
 .tp-stat-grad--amber {
-  background-color: #d97706;
-  background-image: linear-gradient(135deg, #b45309 0%, #d97706 50%, #f59e0b 100%);
+  background-image: linear-gradient(135deg, #1f8b36 0%, #d97706 50%, #f59e0b 100%);
 }
 
 .tp-stat-grad--emerald {
-  background-color: #059669;
-  background-image: linear-gradient(135deg, #047857 0%, #059669 50%, #10b981 100%);
+  background-image: linear-gradient(135deg, #8dbb21 0%, #24f1b0 50%, #9410b9 100%);
 }
 .tp-stat-grad--rose {
-  background-color: #e11d1d;
-  background-image: linear-gradient(135deg, #699f12 0%, #5be11d 50%, #3ff454 100%);
+  /* background-image: linear-gradient(135deg, #f4b907 0%, #10333c 50%, #6249c5 100%); */
+  /* background-color: #e11d1d; */
+  background-image: linear-gradient(135deg, #699f12 0%, #5be11d 50%, #f43f3f 100%);
 }
 .tp-stat-grad--violet {
-  background-color: #7c3aed;
-  background-image: linear-gradient(135deg, #6d28d9 0%, #7c3aed 50%, #8b5cf6 100%);
+  background-image: linear-gradient(135deg, #ed5b07 0%, #7c3aed 50%, #8b5cf6 100%);
 }
 .tp-stat-grad--sky {
-  background-color: #0284c7;
   background-image: linear-gradient(135deg, #0369a1 0%, #0284c7 50%, #0ea5e9 100%);
 }
 /* Wadah ikon semi-transparan di atas kartu statistik gradient */
 .tp-stat-grad .tp-stat-icon {
-  background: rgba(255, 255, 255, 0.22);
+  background: rgba(241, 3, 3, 0.22);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  border: 1px solid rgba(18, 15, 181, 0.28);
 }
-
 
 /* =============================================================
    7. ADMIN: HEADER SECTION & TABEL
@@ -491,7 +481,6 @@ Kilau lembut di atas hero (dimatikan) */
   white-space: nowrap;
 }
 
-
 /* =============================================================
    8. HALAMAN SUKSES (setelah checkout/pembayaran berhasil)
    ============================================================= */
@@ -529,7 +518,6 @@ Kilau lembut di atas hero (dimatikan) */
 
 /* Catatan: animasi "pop" (.tp-success-pop) saat ikon sukses muncul juga
    dihapus karena sifatnya hanya hiasan */
-
 
 /* =============================================================
    9. TIKET / STRUK (efek kupon sobek)
@@ -572,7 +560,6 @@ Kilau lembut di atas hero (dimatikan) */
 .tp-ticket-notch--right {
   right: -9px;
 }
-
 
 /* =============================================================
    10. AKSESIBILITAS: prefers-reduced-motion

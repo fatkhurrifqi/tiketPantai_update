@@ -40,15 +40,17 @@ try {
     $name  = trim($_POST['name'] ?? '');
     $price = max(0, (int)($_POST['price'] ?? 0));
     $unit  = trim($_POST['unit'] ?? '');
-    $desc  = trim($_POST['description'] ?? '');
+    // Maksimal pesanan: NULL (tanpa batas) bila kosong / 0 / tidak valid.
+    $maxQtyRaw = trim($_POST['max_qty'] ?? '');
+    $maxQty = ($maxQtyRaw !== '' && (int)$maxQtyRaw > 0) ? (int)$maxQtyRaw : null;
 
     if ($name === '' || !$destinationId) {
         redirect_msg($destinationId, 'ticket_invalid');
     }
 
     if ($action === 'ticket_create') {
-        $stmt = $pdo->prepare('INSERT INTO ticket_types (name, price, unit, description, destination_id) VALUES (?, ?, ?, ?, ?)');
-        $stmt->execute([$name, $price, $unit, $desc, $destinationId]);
+        $stmt = $pdo->prepare('INSERT INTO ticket_types (name, price, unit, destination_id, max_qty) VALUES (?, ?, ?, ?, ?)');
+        $stmt->execute([$name, $price, $unit, $destinationId, $maxQty]);
         redirect_msg($destinationId, 'ticket_created');
     }
 
@@ -56,8 +58,8 @@ try {
         if (!$id) {
             redirect_msg($destinationId, 'ticket_invalid');
         }
-        $stmt = $pdo->prepare('UPDATE ticket_types SET name = ?, price = ?, unit = ?, description = ? WHERE id = ?');
-        $stmt->execute([$name, $price, $unit, $desc, $id]);
+        $stmt = $pdo->prepare('UPDATE ticket_types SET name = ?, price = ?, unit = ?, max_qty = ? WHERE id = ?');
+        $stmt->execute([$name, $price, $unit, $maxQty, $id]);
         redirect_msg($destinationId, 'ticket_updated');
     }
 

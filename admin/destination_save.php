@@ -1,21 +1,21 @@
-<?php
-// =============================================
-// Handler CRUD Destinasi (admin only)
-// Aksi via field 'action': create | update | delete | toggle_active
-// Upload gambar ke uploads/destinations/
-// =============================================
-session_start();
-$pdo = require __DIR__ . '/../db.php';
-$user = $_SESSION['user'] ?? null;
+    <?php
+    // =============================================
+    // Handler CRUD Destinasi (admin only)
+    // Aksi via field 'action': create | update | delete | toggle_active
+    // Upload gambar ke uploads/destinations/
+    // =============================================
+    session_start();
+    $pdo = require __DIR__ . '/../db.php';
+    $user = $_SESSION['user'] ?? null;
 
-if (!$user || $user['role'] !== 'admin') {
-    header('Location: ../auth/login.php');
-    exit;
-}
+    if (!$user || $user['role'] !== 'admin') {
+        header('Location: ../auth/login.php');
+        exit;
+    }
 
-$baseUrl = 'index.php';
+    $baseUrl = 'index.php';
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: ' . $baseUrl);
     exit;
 }
@@ -157,6 +157,13 @@ try {
         }
         $stmt = $pdo->prepare('INSERT INTO destinations (name, slug, image, location, rating, open_hours, price, description, category, is_popular, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
         $stmt->execute([$name, $slug, $imagePath, $location, $rating, $openHours, $price, $description, $category, $isPopular, $isActive]);
+        $newDestId = (int)$pdo->lastInsertId();
+
+        // Otomatis buat 1 tiket "Tiket Masuk Pantai" (wajib, letaknya selalu paling atas).
+        // Harga = harga destinasi; akan terdeteksi sebagai entry ticket di checkout.
+        $pdo->prepare('INSERT INTO ticket_types (name, price, unit, description, destination_id) VALUES (?, ?, ?, ?, ?)')
+            ->execute(['Tiket Masuk Pantai', $price, '/orang', null, $newDestId]);
+
         header('Location: ' . $baseUrl . '?msg=dest_created');
         exit;
     }
@@ -167,11 +174,12 @@ try {
             exit;
         }
         if ($imagePath !== null) {
-            $stmt = $pdo->prepare('UPDATE destinations SET name=?, image=?, location=?, rating=?, open_hours=?, price=?, description=?, category=?, is_popular=?, is_active=? WHERE id=?');
-            $stmt->execute([$name, $imagePath, $location, $rating, $openHours, $price, $description, $category, $isPopular, $isActive, $id]);
+            // Rating tidak diubah di sini (dikelola otomatis dari ulasan pengunjung).
+            $stmt = $pdo->prepare('UPDATE destinations SET name=?, image=?, location=?, open_hours=?, price=?, description=?, category=?, is_popular=?, is_active=? WHERE id=?');
+            $stmt->execute([$name, $imagePath, $location, $openHours, $price, $description, $category, $isPopular, $isActive, $id]);
         } else {
-            $stmt = $pdo->prepare('UPDATE destinations SET name=?, location=?, rating=?, open_hours=?, price=?, description=?, category=?, is_popular=?, is_active=? WHERE id=?');
-            $stmt->execute([$name, $location, $rating, $openHours, $price, $description, $category, $isPopular, $isActive, $id]);
+            $stmt = $pdo->prepare('UPDATE destinations SET name=?, location=?, open_hours=?, price=?, description=?, category=?, is_popular=?, is_active=? WHERE id=?');
+            $stmt->execute([$name, $location, $openHours, $price, $description, $category, $isPopular, $isActive, $id]);
         }
         header('Location: ' . $baseUrl . '?msg=dest_updated');
         exit;

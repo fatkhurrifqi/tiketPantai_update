@@ -51,7 +51,6 @@ foreach ($destinations as $d) {
         'name'        => $d['name'],
         'image'       => $d['image'],
         'location'    => $d['location'],
-        'rating'      => (float)$d['rating'],
         'open_hours'  => $d['open_hours'],
         'price'       => (int)$d['price'],
         'description' => $d['description'],
@@ -86,10 +85,11 @@ $statusConfig = [
 // Handle order status update
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
     $orderId = (int)$_POST['order_id'];
-    $newStatus = $_POST['new_status'];
-    if (in_array($newStatus, ['pending', 'paid', 'completed', 'cancelled'])) {
+    $newStatus = $_POST['new_status'] ?? '';
+    // Satu-satunya aksi admin: tandai pesanan Selesai.
+    if ($newStatus === 'completed') {
         $stmt = $pdo->prepare('UPDATE orders SET status = ? WHERE id = ?');
-        $stmt->execute([$newStatus, $orderId]);
+        $stmt->execute(['completed', $orderId]);
         header('Location: index.php?updated=1');
         exit;
     }
@@ -115,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_order'])) {
   <link
     href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="../assets/app.css?v=7">
+  <link rel="stylesheet" href="../assets/app.css?v=8">
   <style>
   body {
     font-family: 'Inter', sans-serif;
@@ -181,7 +181,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_order'])) {
 
       <?php if (isset($_GET['updated'])): ?>
       <div class="bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm px-4 py-3 rounded-xl mb-6">
-        <i class="fa-solid fa-check mr-1"></i> Status pesanan berhasil diperbarui!
+        <i class="fa-solid fa-check mr-1"></i> Pesanan ditandai sebagai selesai.
       </div>
       <?php endif; ?>
       <?php
@@ -207,7 +207,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_order'])) {
           <div class="relative font-display text-2xl sm:text-3xl font-extrabold"><?= $totalUsers ?></div>
           <div class="relative text-[11px] text-white/80 mt-0.5">Pengguna terdaftar</div>
         </div>
-        <div class="reveal tp-stat-grad tp-stat-grad--amber p-5" style="--reveal-delay:80ms">
+        <div class="reveal tp-stat-grad tp-stat-grad--e p-5" style="--reveal-delay:80ms">
           <div class="relative flex items-center justify-between mb-3">
             <span class="text-[11px] font-semibold text-white/85 uppercase tracking-wide">Total Pesanan</span>
             <div class="tp-stat-icon w-10 h-10 rounded-xl flex items-center justify-center"><i
@@ -287,20 +287,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_order'])) {
                     class="tp-btn-soft mb-1.5">
                     <i class="fa-solid fa-eye"></i> Detail
                   </button>
-                  <form method="POST" class="flex items-center gap-2">
+                  <?php if ($order['status'] !== 'completed'): ?>
+                  <form method="POST" class="mb-1.5"
+                    onsubmit="return confirm('Tandai pesanan ini sebagai Selesai?');">
                     <input type="hidden" name="order_id" value="<?= $order['id'] ?>">
-                    <select name="new_status"
-                      class="text-xs border rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-teal-500">
-                      <option value="pending" <?= $order['status'] === 'pending' ? 'selected' : '' ?>>Menunggu</option>
-                      <option value="paid" <?= $order['status'] === 'paid' ? 'selected' : '' ?>>Dibayar</option>
-                      <option value="completed" <?= $order['status'] === 'completed' ? 'selected' : '' ?>>Selesai
-                      </option>
-                      <option value="cancelled" <?= $order['status'] === 'cancelled' ? 'selected' : '' ?>>Dibatalkan
-                      </option>
-                    </select>
+                    <input type="hidden" name="new_status" value="completed">
                     <button type="submit" name="update_status"
-                      class="tp-btn tp-btn-gradient text-white text-xs px-3 py-1.5 rounded-lg">Update</button>
+                      class="tp-btn tp-btn-gradient text-white text-xs px-3 py-1.5 rounded-lg">
+                      <i class="fa-solid fa-check mr-1"></i> Selesai
+                    </button>
                   </form>
+                  <?php else: ?>
+                  <span class="inline-block text-xs text-emerald-600 font-semibold px-2 py-1.5"><i
+                      class="fa-solid fa-circle-check mr-1"></i>Selesai</span>
+                  <?php endif; ?>
                   <form method="POST" class="inline-block mt-1"
                     onsubmit="return confirm('Hapus pesanan ini? Pendapatan akan diperbarui otomatis.');">
                     <input type="hidden" name="order_id" value="<?= $order['id'] ?>">
@@ -514,13 +514,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_order'])) {
             <textarea name="location" rows="2"
               class="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"></textarea>
           </div>
-          <div>
-            <label class="block text-xs text-gray-500 mb-1 font-medium">Rating (0-5)</label>
-            <input type="number" name="rating" step="0.1" min="0" max="5" value="0"
-              class="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-500">
-          </div>
-          <div>
-            <label class="block text-xs text-gray-500 mb-1 font-medium">Harga (Rp)</label>
+          <div class="sm:col-span-2">
+            <label class="block text-xs text-gray-500 mb-1 font-medium">Harga Tiket Masuk (Rp) *</label>
             <input type="number" name="price" min="0" value="0"
               class="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-500">
           </div>
@@ -542,8 +537,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_order'])) {
           </div>
           <div class="sm:col-span-2">
             <label class="block text-xs text-gray-500 mb-1 font-medium">Deskripsi</label>
-            <textarea name="description" rows="3"
-              class="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"></textarea>
+            <textarea name="description" id="destDesc" rows="3" maxlength="200"
+              class="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+              oninput="updateDescCounter()"></textarea>
+            <p class="text-[10px] text-gray-400 mt-1 text-right"><span id="descCount">0</span>/200 karakter</p>
           </div>
         </div>
         <div class="flex justify-end gap-2 pt-2 border-t border-gray-100">
@@ -629,6 +626,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_order'])) {
     return form.elements.namedItem(name);
   }
 
+  // Counter karakter deskripsi (maks 200)
+  function updateDescCounter() {
+    const ta = document.getElementById('destDesc');
+    if (ta) document.getElementById('descCount').textContent = ta.value.length;
+  }
+
   function openDestForm(id) {
     const form = document.getElementById('destForm');
     form.reset();
@@ -645,11 +648,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_order'])) {
       field(form, 'id').value = d.id;
       field(form, 'name').value = d.name;
       field(form, 'location').value = d.location || '';
-      field(form, 'rating').value = d.rating;
       field(form, 'price').value = d.price;
       field(form, 'open_hours').value = d.open_hours || '';
       field(form, 'category').value = d.category || 'Obyek Wisata';
       field(form, 'description').value = d.description || '';
+      updateDescCounter();
       field(form, 'is_popular').checked = !!d.is_popular;
       field(form, 'is_active').checked = !!d.is_active;
       prev.src = ASSET + (d.image || 'assets/no-image.svg');
@@ -664,6 +667,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_order'])) {
       document.getElementById('destModalTitle').innerHTML =
         '<i class="fa-solid fa-plus mr-2 text-teal-500"></i>Tambah Destinasi';
     }
+    updateDescCounter();
     document.getElementById('destModal').classList.remove('hidden');
   }
 

@@ -24,7 +24,8 @@ if (!$dest) {
 }
 
 // Ambil daftar tiket/fasilitas untuk destinasi ini
-$ttStmt = $pdo->prepare('SELECT * FROM ticket_types WHERE destination_id = ? ORDER BY price ASC, id ASC');
+// Tiket masuk (nama berisi 'masuk') selalu di urutan teratas, lalu sisanya by id.
+$ttStmt = $pdo->prepare('SELECT * FROM ticket_types WHERE destination_id = ? ORDER BY (name LIKE \'%masuk%\') DESC, id ASC');
 $ttStmt->execute([$destinationId]);
 $ticketTypes = $ttStmt->fetchAll();
 
@@ -46,7 +47,7 @@ foreach ($ticketTypes as $t) {
         'name'        => $t['name'],
         'price'       => (int)$t['price'],
         'unit'        => $t['unit'],
-        'description' => $t['description'],
+        'max_qty'     => $t['max_qty'] !== null ? (int)$t['max_qty'] : null,
     ];
 }
 ?>
@@ -152,7 +153,7 @@ foreach ($ticketTypes as $t) {
               <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Nama</th>
               <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Harga</th>
               <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Satuan</th>
-              <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Keterangan</th>
+              <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Maks</th>
               <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Aksi</th>
             </tr>
           </thead>
@@ -162,7 +163,7 @@ foreach ($ticketTypes as $t) {
               <td class="px-6 py-3 font-medium"><?= htmlspecialchars($t['name']) ?></td>
               <td class="px-6 py-3 font-semibold text-teal-600">Rp <?= number_format($t['price'], 0, ',', '.') ?></td>
               <td class="px-6 py-3 text-xs text-gray-500"><?= htmlspecialchars($t['unit'] ?: '-') ?></td>
-              <td class="px-6 py-3 text-xs text-gray-500 max-w-[260px]"><?= htmlspecialchars($t['description'] ?: '-') ?></td>
+              <td class="px-6 py-3 text-xs text-gray-500"><?= $t['max_qty'] ? (int)$t['max_qty'] : '<span class="text-gray-300">Tanpa batas</span>' ?></td>
               <td class="px-6 py-3">
                 <div class="flex items-center gap-1.5">
                   <button onclick="openTicketForm(<?= (int)$t['id'] ?>)" class="tp-btn-soft" title="Edit"><i class="fa-solid fa-pen"></i></button>
@@ -210,12 +211,20 @@ foreach ($ticketTypes as $t) {
           </div>
           <div>
             <label class="block text-xs text-gray-500 mb-1 font-medium">Satuan</label>
-            <input type="text" name="unit" placeholder="/orang, /jam, /hari" class="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-500">
+            <select name="unit" class="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-500">
+              <option value="/orang">/orang</option>
+              <option value="/unit">/unit</option>
+              <option value="/jam">/jam</option>
+              <option value="/hari">/hari</option>
+              <option value="/paket">/paket</option>
+              <option value="/tiket">/tiket</option>
+            </select>
           </div>
         </div>
         <div>
-          <label class="block text-xs text-gray-500 mb-1 font-medium">Keterangan</label>
-          <textarea name="description" rows="2" placeholder="Opsional, contoh: Tenda untuk 4 orang" class="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"></textarea>
+          <label class="block text-xs text-gray-500 mb-1 font-medium">Maksimal Pesanan</label>
+          <input type="number" name="max_qty" min="0" value="" placeholder="Kosongkan / 0 = tanpa batas" class="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-500">
+          <p class="text-[10px] text-gray-400 mt-1">Batas jumlah maksimal yang boleh dipesan user untuk item ini. Mis. 20.</p>
         </div>
         <div class="flex justify-end gap-2 pt-2 border-t border-gray-100">
           <button type="button" onclick="closeTicketModal()" class="border border-gray-200 text-gray-600 px-4 py-2 rounded-xl text-sm font-semibold hover:bg-gray-50">Batal</button>
@@ -241,7 +250,7 @@ foreach ($ticketTypes as $t) {
         field(form, 'name').value = t.name;
         field(form, 'price').value = t.price;
         field(form, 'unit').value = t.unit || '';
-        field(form, 'description').value = t.description || '';
+        field(form, 'max_qty').value = t.max_qty != null ? t.max_qty : '';
         document.getElementById('ticketModalTitle').innerHTML = '<i class="fa-solid fa-pen mr-2 text-teal-500"></i>Edit Tiket/Fasilitas';
       } else {
         field(form, 'action').value = 'ticket_create';

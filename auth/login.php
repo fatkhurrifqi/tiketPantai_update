@@ -5,6 +5,10 @@ $title = 'Login';
 $user = $_SESSION['user'] ?? null;
 $errors = [];
 
+// Flash pesan sukses (mis. dari halaman register). Sekali pakai lalu dihapus.
+$flash_success = $_SESSION['flash_success'] ?? null;
+unset($_SESSION['flash_success']);
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
@@ -79,6 +83,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h2 class="font-display text-2xl font-extrabold text-gray-900 mb-1">Selamat Datang</h2>
         <p class="text-sm text-gray-500 mb-6">Masuk untuk mengelola pesanan Anda.</p>
 
+        <?php if ($flash_success): ?>
+        <div class="bg-green-50 border-l-4 border-green-500 p-3 rounded mb-4">
+          <p class="text-green-700 text-sm"><?= htmlspecialchars($flash_success) ?></p>
+        </div>
+        <?php endif; ?>
+
         <?php if ($errors): ?>
         <div class="bg-red-50 border-l-4 border-red-500 p-3 rounded mb-4">
           <?php foreach ($errors as $e): ?>
@@ -100,7 +110,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-600 mb-1">Password</label>
-            <input type="password" name="password" required placeholder="Masukkan password" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500">
+            <div class="relative">
+              <input type="password" name="password" id="password" required placeholder="Masukkan password" class="w-full px-4 py-2.5 pr-11 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500">
+              <button type="button" data-toggle-password="password" aria-label="Tampilkan password" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+            </div>
           </div>
           <button type="submit" class="tp-btn tp-btn-gradient w-full text-white py-3 rounded-xl font-semibold text-sm">Masuk</button>
         </form>
