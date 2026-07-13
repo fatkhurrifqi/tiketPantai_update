@@ -118,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_order'])) {
   <link
     href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="../assets/app.css?v=8">
+  <link rel="stylesheet" href="../assets/app.css?v=9">
   <style>
   body {
     font-family: 'Inter', sans-serif;
@@ -248,7 +248,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_order'])) {
           <h2 class="font-display text-lg font-bold text-gray-900">Manajemen Pesanan</h2>
         </div>
         <div class="overflow-auto tp-table-scroll">
-          <table class="tp-table w-full text-sm min-w-[720px]">
+          <table class="tp-table tp-responsive-table w-full text-sm min-w-[720px]">
             <thead class="bg-gray-50">
               <tr>
                 <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">No. Pesanan</th>
@@ -319,7 +319,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_order'])) {
           <h2 class="font-display text-lg font-bold text-gray-900">Pengguna</h2>
         </div>
         <div class="overflow-auto tp-table-scroll">
-          <table class="tp-table w-full text-sm min-w-[720px]">
+          <table class="tp-table tp-responsive-table w-full text-sm min-w-[720px]">
             <thead class="bg-gray-50">
               <tr>
                 <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Nama</th>
@@ -360,7 +360,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_order'])) {
           </button>
         </div>
         <div class="overflow-auto tp-table-scroll">
-          <table class="tp-table w-full text-sm min-w-[720px]">
+          <table class="tp-table tp-responsive-table w-full text-sm min-w-[720px]">
             <thead class="bg-gray-50">
               <tr>
                 <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Gambar</th>

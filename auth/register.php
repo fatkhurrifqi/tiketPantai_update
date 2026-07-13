@@ -4,7 +4,7 @@ $pdo = require __DIR__ . '/../db.php';
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = trim($_POST['name'] ?? '');
+    $name = preg_replace('/\s+/', ' ', trim($_POST['name'] ?? ''));
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
     $password_confirm = $_POST['password_confirm'] ?? '';
@@ -12,12 +12,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!$name || !$email || !$password) {
         $errors[] = 'Semua field wajib diisi.';
+    } elseif (!preg_match('/^[A-Za-zÀ-ÿ\s]+$/u', $name)) {
+        $errors[] = 'Nama lengkap hanya boleh berisi huruf.';
+    } elseif (mb_strlen($name) < 3) {
+        $errors[] = 'Nama lengkap minimal 3 karakter.';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors[] = 'Email tidak valid.';
     } elseif ($password !== $password_confirm) {
         $errors[] = 'Konfirmasi password tidak cocok.';
     } elseif (strlen($password) < 6) {
         $errors[] = 'Password minimal 6 karakter.';
+    } elseif ($phone !== '' && !preg_match('/^(08|62)[0-9]{7,13}$/', $phone)) {
+        $errors[] = 'No. Telepon harus diawali 08 atau 62.';
     } else {
         $stmt = $pdo->prepare('SELECT id FROM users WHERE email = ? LIMIT 1');
         $stmt->execute([$email]);
@@ -131,6 +137,8 @@ $user = $_SESSION['user'] ?? null;
             <label class="block text-sm font-medium text-gray-600 mb-1">Nama Lengkap</label>
             <input type="text" name="name" required placeholder="Masukkan nama lengkap"
               value="<?= htmlspecialchars($name ?? '') ?>"
+              pattern="[A-Za-zÀ-ÿ\s]+" title="Nama hanya boleh berisi huruf dan spasi"
+              oninput="this.value = this.value.replace(/[^A-Za-zÀ-ÿ\s]/g, '')"
               class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500">
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -149,7 +157,8 @@ $user = $_SESSION['user'] ?? null;
             <div>
               <label class="block text-sm font-medium text-gray-600 mb-1">No. Telepon</label>
               <input type="text" name="phone" placeholder="08xx-xxxx-xxxx" value="<?= htmlspecialchars($phone ?? '') ?>"
-                inputmode="numeric" pattern="[0-9]*" maxlength="15"
+                inputmode="numeric" pattern="(08|62)[0-9]{7,13}" maxlength="15"
+                title="Nomor telepon harus diawali 08 atau 62"
                 oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                 class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500">
             </div>
