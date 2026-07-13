@@ -84,15 +84,18 @@ $statusConfig = [
 
 // Handle order status update
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
-    $orderId = (int)$_POST['order_id'];
+    $orderId = (int)($_POST['order_id'] ?? 0);
     $newStatus = $_POST['new_status'] ?? '';
-    // Satu-satunya aksi admin: tandai pesanan Selesai.
-    if ($newStatus === 'completed') {
+    // Status yang diizinkan (samakan dengan whitelist di orders_update.php).
+    $allowed = ['pending', 'paid', 'completed', 'cancelled'];
+    if ($orderId && in_array($newStatus, $allowed, true)) {
         $stmt = $pdo->prepare('UPDATE orders SET status = ? WHERE id = ?');
-        $stmt->execute(['completed', $orderId]);
+        $stmt->execute([$newStatus, $orderId]);
         header('Location: index.php?updated=1');
         exit;
     }
+    header('Location: index.php');
+    exit;
 }
 
 // Handle order deletion (item pesanan ter-cascade otomatis; pendapatan dihitung ulang saat reload)
@@ -181,7 +184,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_order'])) {
 
       <?php if (isset($_GET['updated'])): ?>
       <div class="bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm px-4 py-3 rounded-xl mb-6">
-        <i class="fa-solid fa-check mr-1"></i> Pesanan ditandai sebagai selesai.
+        <i class="fa-solid fa-check mr-1"></i> Status pesanan berhasil diperbarui.
       </div>
       <?php endif; ?>
       <?php
@@ -287,20 +290,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_order'])) {
                     class="tp-btn-soft mb-1.5">
                     <i class="fa-solid fa-eye"></i> Detail
                   </button>
-                  <?php if ($order['status'] !== 'completed'): ?>
-                  <form method="POST" class="mb-1.5"
-                    onsubmit="return confirm('Tandai pesanan ini sebagai Selesai?');">
-                    <input type="hidden" name="order_id" value="<?= $order['id'] ?>">
-                    <input type="hidden" name="new_status" value="completed">
-                    <button type="submit" name="update_status"
-                      class="tp-btn tp-btn-gradient text-white text-xs px-3 py-1.5 rounded-lg">
-                      <i class="fa-solid fa-check mr-1"></i> Selesai
-                    </button>
-                  </form>
-                  <?php else: ?>
-                  <span class="inline-block text-xs text-emerald-600 font-semibold px-2 py-1.5"><i
-                      class="fa-solid fa-circle-check mr-1"></i>Selesai</span>
-                  <?php endif; ?>
+                  <button type="button" class="order-status-toggle tp-btn-soft mb-1.5"
+                    data-order-id="<?= (int)$order['id'] ?>">
+                    <i class="fa-solid fa-flag-checkered mr-1"></i> Ubah Status <i
+                      class="fa-solid fa-chevron-down ml-0.5 text-[10px]"></i>
+                  </button>
                   <form method="POST" class="inline-block mt-1"
                     onsubmit="return confirm('Hapus pesanan ini? Pendapatan akan diperbarui otomatis.');">
                     <input type="hidden" name="order_id" value="<?= $order['id'] ?>">
@@ -537,10 +531,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_order'])) {
           </div>
           <div class="sm:col-span-2">
             <label class="block text-xs text-gray-500 mb-1 font-medium">Deskripsi</label>
-            <textarea name="description" id="destDesc" rows="3" maxlength="200"
+            <textarea name="description" id="destDesc" rows="3" maxlength="250"
               class="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
               oninput="updateDescCounter()"></textarea>
-            <p class="text-[10px] text-gray-400 mt-1 text-right"><span id="descCount">0</span>/200 karakter</p>
+            <p class="text-[10px] text-gray-400 mt-1 text-right"><span id="descCount">0</span>/250 karakter</p>
           </div>
         </div>
         <div class="flex justify-end gap-2 pt-2 border-t border-gray-100">
@@ -552,6 +546,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_order'])) {
       </form>
     </div>
   </div>
+
+  <!-- Dropdown Ubah Status Pesanan (satu menu bersama, posisi diatur via JS) -->
+  <div id="orderStatusMenu"
+    class="hidden fixed z-[70] w-44 bg-white border border-gray-200 rounded-xl shadow-xl py-1 text-sm">
+    <button type="button" data-status="paid"
+      class="osm-item w-full text-left px-3 py-2 hover:bg-gray-50 flex items-center gap-2">
+      <i class="fa-solid fa-circle-check text-teal-600 w-4 text-center"></i> Tandai Dibayar
+    </button>
+    <button type="button" data-status="completed"
+      class="osm-item w-full text-left px-3 py-2 hover:bg-gray-50 flex items-center gap-2">
+      <i class="fa-solid fa-check-double text-emerald-600 w-4 text-center"></i> Tandai Selesai
+    </button>
+    <div class="my-1 border-t border-gray-100"></div>
+    <button type="button" data-status="cancelled"
+      class="osm-item w-full text-left px-3 py-2 hover:bg-gray-50 flex items-center gap-2 text-red-600">
+      <i class="fa-solid fa-circle-xmark w-4 text-center"></i> Batalkan Pesanan
+    </button>
+  </div>
+  <form id="orderStatusForm" method="POST" class="hidden">
+    <input type="hidden" name="order_id" id="osfOrderId" value="">
+    <input type="hidden" name="new_status" id="osfStatus" value="">
+    <input type="hidden" name="update_status" value="1">
+  </form>
 
   <script>
   const ASSET = '<?php echo $ASSET; ?>';
@@ -620,13 +637,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_order'])) {
     return '';
   }
 
+  // ---------- Dropdown Ubah Status Pesanan ----------
+  const orderStatusMenu = document.getElementById('orderStatusMenu');
+  let currentOrderId = null;
+
+  function closeOrderStatusMenu() {
+    orderStatusMenu.classList.add('hidden');
+  }
+
+  function openOrderStatusMenu(btn) {
+    const rect = btn.getBoundingClientRect();
+    orderStatusMenu.classList.remove('hidden');
+    const menuW = orderStatusMenu.offsetWidth;
+    let left = rect.right - menuW; // rapikan ke kiri biar tidak keluar layar kanan
+    if (left < 8) left = 8;
+    orderStatusMenu.style.top = (rect.bottom + 4) + 'px';
+    orderStatusMenu.style.left = left + 'px';
+  }
+
+  document.querySelectorAll('.order-status-toggle').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      currentOrderId = btn.dataset.orderId;
+      const wasOpen = !orderStatusMenu.classList.contains('hidden');
+      closeOrderStatusMenu();
+      if (!wasOpen) openOrderStatusMenu(btn);
+    });
+  });
+
+  orderStatusMenu.querySelectorAll('.osm-item').forEach(function(item) {
+    item.addEventListener('click', function() {
+      const status = item.dataset.status;
+      const label = item.textContent.trim();
+      closeOrderStatusMenu();
+      if (currentOrderId && confirm('Ubah status pesanan menjadi "' + label + '"?')) {
+        document.getElementById('osfOrderId').value = currentOrderId;
+        document.getElementById('osfStatus').value = status;
+        document.getElementById('orderStatusForm').submit();
+      }
+    });
+  });
+
+  // Tutup menu bila klik di luar atau layar di-resize
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('#orderStatusMenu') && !e.target.closest('.order-status-toggle')) {
+      closeOrderStatusMenu();
+    }
+  });
+  window.addEventListener('resize', closeOrderStatusMenu);
+
   // ---------- Modal Tambah/Edit Destinasi ----------
   // Gunakan elements.namedItem karena 'name','action','id' adalah properti form bawaan.
   function field(form, name) {
     return form.elements.namedItem(name);
   }
 
-  // Counter karakter deskripsi (maks 200)
+  // Counter karakter deskripsi (maks 250)
   function updateDescCounter() {
     const ta = document.getElementById('destDesc');
     if (ta) document.getElementById('descCount').textContent = ta.value.length;

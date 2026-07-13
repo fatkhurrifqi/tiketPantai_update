@@ -84,7 +84,7 @@ Bayangkan `order_items` itu daftar belanja. Tiap baris harus nulis **KTP pembeli
 - **FK** = aturan "KTP ini harus benar-benar ada di meju user".
 - `ON DELETE CASCADE` = kalau pemilik KTP dihapus, semua catatan miliknya ikut hilang (otomatis dibersihkan).
 
-- **Kode** (`database.sql`):
+- **Kode** *(ilustrasi skema; relasi lengkap lihat `erd.drawio`)*:
 ```sql
 CREATE TABLE order_items (
   order_id INT NOT NULL,
@@ -92,6 +92,7 @@ CREATE TABLE order_items (
   FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
 );
 ```
+> Catatan: di `admin/destination_save.php`, pantai yang **masih punya pesanan aktif** (pending/paid) sengaja **diblok duluan** oleh aplikasi sebelum sampai ke aturan FK ini — supaya penghapusan lebih aman & pesanan yang sedang jalan tidak rusak.
 
 ---
 
@@ -218,7 +219,7 @@ foreach ($qty as $ttId => $quantity) {
 ---
 
 ### 💳 `payments.php` — **Papan Daftar Metode Bayar di Dinding**
-> = poster di kasir yang daftar: BCA, Mandiri, GoPay, QRIS, dll. Diganti di **satu papan** saja, semua halaman ikut.
+> = poster di kasir yang daftar 4 kelompok: **Transfer Bank** (BCA/SeaBank/BRI), **E-Wallet** (GoPay/DANA/ShopeePay/OVO), **QRIS**, dan **Bayar di Lokasi**. Diganti di **satu papan** saja, semua halaman ikut.
 
 - `get_payments()` = baca papan; `resolve_payment()` = terjemahkan "si user pilih apa" jadi instruksi jelas.
 ```php
