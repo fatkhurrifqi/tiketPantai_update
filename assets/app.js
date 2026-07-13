@@ -138,6 +138,30 @@
     });
   }
 
+  /* ---- 5) Tabel responsif: label otomatis dari <th> ----
+     Untuk setiap tabel bertanda .tp-responsive-table, salin teks header
+     (<th>) ke atribut data-label pada sel <td> di baris yang bersesuaian.
+     Atribut ini lalu dipakai CSS (lihat app.css, seksi "Tabel Responsif")
+     untuk menampilkan label kolom saat tabel berubah jadi kartu di layar
+     kecil. Tanpa ini, kartu di mobile hanya menampilkan nilai tanpa
+     keterangan kolom. */
+  function initResponsiveTables() {
+    var tables = document.querySelectorAll('.tp-responsive-table');
+    if (!tables.length) return;
+    tables.forEach(function (table) {
+      var headers = Array.prototype.map.call(
+        table.querySelectorAll('thead th'),
+        function (th) { return th.textContent.trim(); }
+      );
+      table.querySelectorAll('tbody tr').forEach(function (tr) {
+        var tds = tr.querySelectorAll('td');
+        tds.forEach(function (td, i) {
+          if (headers[i]) td.setAttribute('data-label', headers[i]);
+        });
+      });
+    });
+  }
+
   // Jalankan semua fitur setelah DOM siap (atau langsung jika sudah siap)
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () {
@@ -145,11 +169,13 @@
       initSlideshow();
       initMobileNav();
       initPasswordToggle();
+      initResponsiveTables();
     });
   } else {
     initNav();
     initSlideshow();
     initMobileNav();
     initPasswordToggle();
+    initResponsiveTables();
   }
 })();

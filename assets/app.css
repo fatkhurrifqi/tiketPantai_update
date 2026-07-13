@@ -590,3 +590,92 @@ html {
     transition: none !important;
   }
 }
+
+/* =============================================================
+   11. TABEL RESPONSIF (admin) — "kartu" pada layar kecil
+   -------------------------------------------------------------
+   Pada layar < 768px, tabel yang diberi class .tp-responsive-table
+   berubah menjadi tumpukan kartu (satu kartu per baris). Header
+   (thead) disembunyikan; tiap sel menampilkan label kolomnya yang
+   diambil otomatis dari <th> lewat atribut data-label (lihat app.js,
+   fungsi initResponsiveTables). Wrapper .tp-table-scroll dinetralkan
+   agar tidak ada scroll horizontal maupun tinggi maksimum. */
+@media (max-width: 767px) {
+  /* Netralkan wrapper scroll di mobile (hanya bila berisi tabel responsif) */
+  .tp-table-scroll:has(.tp-responsive-table) {
+    max-height: none;
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  /* Hapus min-width (mis. min-w-[720px]) supaya tidak memaksa scroll */
+  .tp-responsive-table {
+    min-width: 0 !important;
+  }
+  .tp-responsive-table thead {
+    display: none;
+  }
+  .tp-responsive-table,
+  .tp-responsive-table tbody,
+  .tp-responsive-table tr,
+  .tp-responsive-table td {
+    display: block;
+    width: 100%;
+  }
+
+  /* Satu kartu per baris */
+  .tp-responsive-table tbody tr {
+    border: 1px solid #e5e7eb;
+    border-radius: 0.85rem;
+    background: #fff;
+    margin-bottom: 0.85rem;
+    padding: 0.25rem 0;
+    box-shadow: 0 8px 20px -16px rgba(15, 23, 42, 0.28);
+  }
+  .tp-responsive-table tbody tr:hover {
+    background: #fff;
+  }
+
+  /* Tiap sel: label di kiri, nilai di kanan */
+  .tp-responsive-table td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.55rem 1rem;
+    text-align: right;
+    min-height: 2.4rem;
+    line-height: 1.35;
+  }
+  .tp-responsive-table td::before {
+    content: attr(data-label);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #6b7280;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  /* Kolom "Aksi" (banyak tombol) → tampil full-width di bawah kartu */
+  .tp-responsive-table td[data-label="Aksi"] {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    border-top: 1px dashed #e5e7eb;
+    padding-top: 0.75rem;
+    text-align: left;
+  }
+  .tp-responsive-table td[data-label="Aksi"]::before {
+    width: 100%;
+    margin-bottom: 0.35rem;
+  }
+
+  /* Thumbnail destinasi sedikit lebih besar di kartu */
+  .tp-responsive-table td[data-label="Gambar"] img {
+    width: 3rem !important;
+    height: 3rem !important;
+  }
+}

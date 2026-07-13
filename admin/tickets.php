@@ -61,7 +61,7 @@ foreach ($ticketTypes as $t) {
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/app.css?v=7">
+  <link rel="stylesheet" href="../assets/app.css?v=9">
   <style>
   body { font-family: 'Inter', sans-serif; }
   h1, h2, h3, .font-display { font-family: 'Plus Jakarta Sans', 'Inter', sans-serif; }
@@ -147,7 +147,7 @@ foreach ($ticketTypes as $t) {
       </div>
       <?php else: ?>
       <div class="overflow-auto tp-table-scroll">
-        <table class="tp-table w-full text-sm">
+        <table class="tp-table tp-responsive-table w-full text-sm">
           <thead class="bg-gray-50">
             <tr>
               <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase">Nama</th>
