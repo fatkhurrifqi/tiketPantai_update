@@ -3,7 +3,7 @@
 // Update credentials to match your MySQL server
 
 $DB_HOST = '127.0.0.1';
-$DB_NAME = 'tiketpantai';
+$DB_NAME = 'db_tiketpantai';
 $DB_USER = 'root';
 $DB_PASS = '';
 
