@@ -2,10 +2,12 @@
 // Database connection for TiketPantai - MySQL
 // Update credentials to match your MySQL server
 
-$DB_HOST = '127.0.0.1';
-$DB_NAME = 'db_tiketpantai';
-$DB_USER = 'root';
-$DB_PASS = '';
+// Baca dari environment variable (Railway), fallback ke nilai lokal (Laragon)
+$DB_HOST = getenv('DB_HOST') ?: '127.0.0.1';
+$DB_PORT = getenv('DB_PORT') ?: '3306';
+$DB_NAME = getenv('DB_NAME') ?: 'db_tiketpantai';
+$DB_USER = getenv('DB_USER') ?: 'root';
+$DB_PASS = getenv('DB_PASS') ?: '';
 
 $options = [
     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
@@ -14,7 +16,7 @@ $options = [
 ];
 
 try {
-    $pdo = new PDO("mysql:host=$DB_HOST;dbname=$DB_NAME;charset=utf8mb4", $DB_USER, $DB_PASS, $options);
+    $pdo = new PDO("mysql:host=$DB_HOST;port=$DB_PORT;dbname=$DB_NAME;charset=utf8mb4", $DB_USER, $DB_PASS, $options);
 } catch (PDOException $e) {
     die('Database connection failed: ' . $e->getMessage());
 }
