@@ -1,5 +1,3 @@
-<!-- Testing -->
-
 <?php
 // Memulai session PHP agar bisa membaca data login user ($_SESSION)
 session_start();
